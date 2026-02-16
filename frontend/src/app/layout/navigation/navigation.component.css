@@ -1,0 +1,81 @@
+/* ================= SIDEBAR ================= */
+
+.sidebar {
+  width: 220px;
+  background-color: #d6cbb3;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+}
+
+/* ================= LOGO ================= */
+
+.logo {
+  background-color: #7B1E14;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  border-radius: 20px;
+  margin-bottom: 30px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* ================= MENU SECTION ================= */
+
+.menu-section {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ================= MENU ITEMS ================= */
+
+.menu {
+  padding: 12px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.menu.active {
+  background-color: #e6dbc3;
+  font-weight: bold;
+}
+
+.menu:hover {
+  background-color: #c8b89d;
+}
+
+/* ================= BOTTOM SECTION ================= */
+
+.bottom-section {
+  margin-top: auto;
+  margin-bottom: 30px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1); /* 🔥 subtle separator */
+}
+
+/* ================= LOGOUT STYLE ================= */
+
+.logout {
+  background-color: #7B1E14;
+  color: white;
+  text-align: center;
+  font-weight: bold;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout:hover {
+  background-color: #5e160f;
+  transform: scale(1.02);
+}

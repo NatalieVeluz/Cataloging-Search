@@ -1,0 +1,75 @@
+/* MAIN CONTENT AREA */
+.main-content {
+  margin-left: 220px; /* matches sidebar */
+  background-color: #e9e2d0;
+  height: 100vh;
+
+  display: flex;
+  justify-content: center;   /* horizontal center */
+  align-items: center;       /* vertical center */
+}
+
+/* ACCOUNT CARD */
+.account-container {
+  background-color: #d6cbb3;
+  padding: 50px 60px;
+  border-radius: 16px;
+  width: 600px;              /* smaller fixed width */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* PROFILE SECTION */
+.profile-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.profile-wrapper {
+  position: relative;
+  width: 160px;
+  height: 160px;
+}
+
+.profile-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* CAMERA ICON */
+.camera-icon {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background-color: #7B1E14;
+  color: white;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* FORM SECTION */
+.form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  width: 80px;
+  font-weight: 500;
+}
+
+.form-group input {
+  flex: 1;
+  padding: 10px;
+  border: 2px solid #7B1E14;
+  border-radius: 6px;
+  background-color: #f4efe4;
+}

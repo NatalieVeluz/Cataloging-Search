@@ -1,0 +1,243 @@
+<!-- ================= RESULT CARD ================= -->
+
+<div class="result-card">
+
+  <div class="book-cover">
+    <ng-container *ngIf="book?.coverImageUrl; else noImage">
+      <img
+        [src]="book.coverImageUrl"
+        alt="Book Cover"
+        (error)="book.coverImageUrl = null"
+      />
+    </ng-container>
+
+    <ng-template #noImage>
+      <div class="no-cover">📖</div>
+    </ng-template>
+  </div>
+
+  <div class="book-info">
+    <h4>{{ book?.title }}</h4>
+    <p><strong>By</strong> {{ book?.authors }}</p>
+    <p><strong>ISBN:</strong> {{ book?.isbn }}</p>
+  </div>
+
+  <div class="book-action">
+
+    <button
+      class="pin-btn"
+      [class.pinned]="pinService.isPinned(book?.isbn)"
+      (click)="togglePin($event)">
+      📌
+    </button>
+
+    <button
+      class="action-btn"
+      (click)="openDetails()">
+      ➜
+    </button>
+
+  </div>
+</div>
+
+
+<!-- ================= MODAL ================= -->
+
+<div class="details-overlay"
+     *ngIf="showModal"
+     (click)="onOverlayClick($event)">
+
+  <div class="details-modal"
+       (click)="$event.stopPropagation()">
+
+    <!-- HEADER -->
+    <div class="details-header">
+
+      <button class="close-btn"
+              (click)="closeDetails()">
+        ✕
+      </button>
+
+      <button class="modal-pin-btn"
+              [class.pinned]="pinService.isPinned(book?.isbn)"
+              (click)="togglePin($event)">
+        📌
+      </button>
+
+    </div>
+
+    <div class="details-divider"></div>
+
+    <!-- COVER -->
+    <div class="modal-cover">
+      <ng-container *ngIf="book?.coverImageUrl; else modalNoImage">
+        <img
+          [src]="book.coverImageUrl"
+          alt="Book Cover"
+          (error)="book.coverImageUrl = null"
+        />
+      </ng-container>
+
+      <ng-template #modalNoImage>
+        <div class="no-cover large">📖</div>
+      </ng-template>
+    </div>
+
+    <!-- ================= DETAILS ================= -->
+
+    <div class="details-content">
+
+      <!-- ISBN -->
+      <div class="details-row">
+        <label>ISBN:</label>
+        <div class="details-box">{{ book?.isbn }}</div>
+      </div>
+
+      <!-- Title -->
+      <div class="details-row">
+        <label>Title:</label>
+
+        <input *ngIf="editMode"
+               [(ngModel)]="editableBook.title" />
+
+        <div *ngIf="!editMode"
+             class="details-box">
+          {{ book?.title }}
+        </div>
+      </div>
+
+      <!-- Author -->
+      <div class="details-row">
+        <label>Author:</label>
+
+        <input *ngIf="editMode"
+               [(ngModel)]="editableBook.authors" />
+
+        <div *ngIf="!editMode"
+             class="details-box">
+          {{ book?.authors }}
+        </div>
+      </div>
+
+      <!-- LCCN -->
+      <div class="details-row">
+        <label>LCCN:</label>
+
+        <input *ngIf="editMode"
+               [(ngModel)]="editableBook.lccn" />
+
+        <div *ngIf="!editMode"
+             class="details-box">
+          {{ book?.lccn }}
+        </div>
+      </div>
+
+      <!-- Publication Year -->
+      <div class="details-row">
+        <label>Publication Year:</label>
+
+        <input *ngIf="editMode"
+               [(ngModel)]="editableBook.publicationYear" />
+
+        <div *ngIf="!editMode"
+             class="details-box">
+          {{ book?.publicationYear }}
+        </div>
+      </div>
+
+      <!-- Edition -->
+      <div class="details-row">
+        <label>Edition:</label>
+
+        <input *ngIf="editMode"
+               [(ngModel)]="editableBook.edition" />
+
+        <div *ngIf="!editMode"
+             class="details-box">
+          {{ book?.edition }}
+        </div>
+      </div>
+
+      <!-- Publisher -->
+      <div class="details-row">
+        <label>Publisher:</label>
+
+        <input *ngIf="editMode"
+               [(ngModel)]="editableBook.publisher" />
+
+        <div *ngIf="!editMode"
+             class="details-box">
+          {{ book?.publisher }}
+        </div>
+      </div>
+
+      <!-- ✅ Content Notes (NOW NORMAL FIELD) -->
+      <div class="details-row">
+        <label>Content Notes:</label>
+
+        <input *ngIf="editMode"
+               [(ngModel)]="editableBook.contentNotes" />
+
+        <div *ngIf="!editMode"
+             class="details-box">
+          {{ book?.contentNotes }}
+        </div>
+      </div>
+
+      <!-- Cutter Number -->
+      <div class="details-row">
+        <label>Cutter Number:</label>
+
+        <input *ngIf="editMode"
+               [(ngModel)]="editableBook.cutterNumber" />
+
+        <div *ngIf="!editMode"
+             class="details-box">
+          {{ book?.cutterNumber }}
+        </div>
+      </div>
+
+      <!-- ✅ Summary (ONLY large field) -->
+      <div class="details-row">
+        <label>Summary:</label>
+
+        <textarea *ngIf="editMode"
+                  [(ngModel)]="editableBook.summary">
+        </textarea>
+
+        <div *ngIf="!editMode"
+             class="details-textarea">
+          {{ book?.summary }}
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================= EDIT CONTROLS ================= -->
+
+    <div class="edit-actions">
+
+      <button *ngIf="!editMode && pinService.isPinned(book?.isbn)"
+              class="edit-btn"
+              (click)="enableEdit()">
+        Edit
+      </button>
+
+      <div *ngIf="editMode">
+
+        <button class="save-btn"
+                (click)="saveChanges()">
+          Save
+        </button>
+
+        <button class="cancel-btn"
+                (click)="cancelEdit()">
+          Cancel
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>

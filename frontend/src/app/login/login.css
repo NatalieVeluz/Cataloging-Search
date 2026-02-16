@@ -1,0 +1,90 @@
+/* Page background */
+.page-wrapper {
+  height: 100vh;
+  background-color: #ffffff; /* dark background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Card container */
+.login-card {
+  background-color: #d9cfb8; /* beige tone */
+  padding: 50px 70px;
+  border-radius: 10px;
+  width: 600px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* Header */
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;   /* centers whole header */
+  gap: 30px;                 /* space between icon and text */
+  margin-bottom: 40px;
+  text-align: left;
+}
+
+/* Logo */
+.logo {
+  font-size: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.title h2 {
+  margin: 0;
+  font-weight: bold;
+}
+
+.title h3 {
+  margin: 0;
+  font-weight: normal;
+}
+
+/* Form group */
+.form-group {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.form-group label {
+  width: 100px;
+  font-weight: 500;
+}
+
+.form-group input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #8b0000;
+  border-radius: 4px;
+}
+
+/* Button */
+.login-btn {
+  display: block;
+  margin: 30px auto 0;
+  background-color: #7a2d1f;
+  color: white;
+  padding: 10px 30px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.login-btn:hover {
+  background-color: #5a1f15;
+}
+
+/* Error */
+.error {
+  text-align: center;
+  color: red;
+  margin-top: 15px;
+}

@@ -1,0 +1,195 @@
+/* ================= GLOBAL ================= */
+
+body {
+  margin: 0;
+}
+
+/* IMPORTANT: Removed font-family to match pinned books page */
+.layout-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ================= MAIN CONTENT ================= */
+
+.main-content {
+  flex: 1;
+  padding: 40px 30px;
+  background-color: #e9e2d0;
+  display: flex;
+  flex-direction: column;
+  margin-left: 250px;
+}
+
+/* ================= BODY WRAPPER ================= */
+
+.content-body {
+  display: flex;
+  gap: 30px;
+  flex: 1;
+}
+
+/* ================= LEFT SIDE ================= */
+
+.left-content {
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* ================= SEARCH ================= */
+
+.search-section {
+  background: #dcd3bf;
+  padding: 25px;
+  border-radius: 10px;
+}
+
+.search-section h3 {
+  margin-top: 0;
+  color: #7B1E14;
+  font-weight: 600;
+}
+
+.search-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+  align-items: center;
+}
+
+.search-row select,
+.search-input {
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid #7B1E14;
+  border-radius: 6px;
+  background-color: #f7f3ea;
+  font-size: 14px;
+  font-family: inherit; /* keeps same font */
+}
+
+.search-row select {
+  background-color: #7B1E14;
+  color: white;
+  border: none;
+  width: 140px;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 420px;
+}
+
+.search-row button {
+  height: 42px;
+  background-color: #7B1E14;
+  color: white;
+  border: none;
+  padding: 0 22px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+  font-size: 14px;
+}
+
+.search-row button:hover {
+  background-color: #5e140d;
+}
+
+/* ================= MANUAL FORM ================= */
+
+.manual-section {
+  background: #dcd3bf;
+  padding: 25px;
+  border-radius: 10px;
+}
+
+.manual-section h3 {
+  margin-top: 0;
+  color: #7B1E14;
+  font-weight: 600;
+}
+
+/* FORM LAYOUT UPDATED */
+.manual-section form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* slightly more spacing like modal */
+}
+
+/* NEW: form-group for stacked labels */
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* NEW: label styling to match modal */
+.form-group label {
+  font-weight: 600;
+  color: #7B1E14;
+  font-size: 12px;      /* slightly smaller */
+}
+
+/* Inputs */
+.manual-section input {
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid #7B1E14;
+  border-radius: 6px;
+  background-color: #f7f3ea;
+  font-size: 12px;
+
+  font-family: inherit;
+  color: inherit;
+}
+
+
+/* Save Button */
+.save-btn {
+  height: 42px;
+  background-color: #7B1E14;
+  color: white;
+  border: none;
+  margin-top: 10px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+  font-weight: 600;
+}
+
+.save-btn:hover {
+  background-color: #5e140d;
+}
+
+/* ================= RESULTS ================= */
+
+.results-section {
+  width: 60%;
+  background: #e5dbc7;
+  padding: 25px;
+  border-radius: 12px;
+  overflow-y: auto;
+}
+
+.results-section h3 {
+  margin-top: 0;
+  color: #7B1E14;
+  font-weight: 600;
+}
+
+.empty-state {
+  color: gray;
+  margin-top: 20px;
+  font-style: italic;
+  text-align: center;
+}
+
+/* ================= TITLE ================= */
+
+.title {
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: 600;
+}

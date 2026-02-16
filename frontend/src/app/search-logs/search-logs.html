@@ -1,0 +1,96 @@
+<div class="layout-container">
+
+  <app-navigation></app-navigation>
+
+  <div class="main-content">
+
+    <div class="content-wrapper">
+
+      <h2 class="title">
+        The Mapúan Cataloging Search Resources Platform<br>
+        Search Logs
+      </h2>
+
+      <!-- ================= FILTER SECTION ================= -->
+      <div class="filter-section">
+
+        <div class="search-row">
+
+          <select class="search-select" [(ngModel)]="searchBy">
+            <option value="title">Title</option>
+            <option value="author">Author</option>
+            <option value="isbn">ISBN</option>
+          </select>
+
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Enter value..."
+            [(ngModel)]="keyword"
+          />
+
+          <button class="search-btn" (click)="search()">Search</button>
+          <button class="search-btn" (click)="resetFilters()">Reset</button>
+
+        </div>
+
+      </div>
+
+      <!-- ================= LOADING ================= -->
+      <div class="no-results" *ngIf="isLoading">
+        Loading search logs...
+      </div>
+
+      <!-- ================= DELETE ALL BUTTON ================= -->
+      <div class="delete-all-container" *ngIf="!isLoading && logs.length > 0">
+        <button
+          class="delete-all-btn"
+          (click)="deleteAll()">
+          Delete All Logs
+        </button>
+      </div>
+
+      <!-- ================= RESULTS ================= -->
+      <div class="results-section" *ngIf="!isLoading && logs.length > 0">
+
+        <div
+          class="card-wrapper"
+          *ngFor="let log of logs; trackBy: trackById">
+
+          <!-- SEARCH TIMESTAMP -->
+          <div class="log-meta">
+            <small>
+              Searched on {{ log.searchedAt | date:'medium' }}
+            </small>
+          </div>
+
+          <div class="card-container">
+
+            <app-book-result
+              [book]="log"
+              (pin)="togglePin($event)">
+            </app-book-result>
+
+            <!-- DELETE BUTTON -->
+            <button
+              class="delete-btn"
+              (click)="deleteLog(log)">
+              🗑
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ================= EMPTY STATE ================= -->
+      <div class="no-results" *ngIf="!isLoading && logs.length === 0">
+        No search logs found.
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

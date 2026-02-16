@@ -1,0 +1,44 @@
+<div class="sidebar">
+
+  <div>
+
+    <div class="logo">MapúaLibrary</div>
+
+    <div class="menu-section">
+
+      <div class="menu"
+           routerLink="/home"
+           routerLinkActive="active"
+           [routerLinkActiveOptions]="{ exact: true }">
+        Home
+      </div>
+
+      <div class="menu"
+           routerLink="/pinned-books"
+           routerLinkActive="active">
+        Pinned Books
+      </div>
+
+      <div class="menu"
+           routerLink="/search-logs"
+           routerLinkActive="active">
+        Search Logs
+      </div>
+
+      <div class="menu"
+           routerLink="/manage-account"
+           routerLinkActive="active">
+        Manage Account
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="bottom-section">
+    <div class="menu logout" (click)="logout()">
+      Logout
+    </div>
+  </div>
+
+</div>

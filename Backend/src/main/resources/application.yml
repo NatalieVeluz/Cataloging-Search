@@ -1,0 +1,19 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/catalog_db?useSSL=false&serverTimezone=Asia/Manila
+    username: root
+    password: password
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    open-in-view: false
+
+google:
+  books:
+    api:
+      key: AIzaSyDvj4twvyXRybrI8WEvssLs3fbi8lOV114

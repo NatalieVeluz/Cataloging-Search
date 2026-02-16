@@ -1,0 +1,240 @@
+/* =========================
+   GLOBAL FIX
+========================= */
+
+* {
+  box-sizing: border-box;
+}
+
+/* =========================
+   LAYOUT
+========================= */
+
+.layout-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #e9e2d0;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+  margin-left: 250px; /* same width as sidebar */
+}
+
+.content-wrapper {
+  width: 900px;
+}
+
+/* =========================
+   TITLE
+========================= */
+
+.title {
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: 600;
+}
+
+/* =========================
+   FILTER SECTION
+========================= */
+
+.filter-section {
+  background: #dcd3bf;
+  padding: 25px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+}
+
+/* SEARCH ROW */
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+/* Shared height for ALL controls */
+.search-select,
+.search-input,
+.search-btn,
+.date-group input {
+  height: 42px;
+}
+
+/* Dropdown */
+.search-select {
+  background-color: #7b1113;
+  color: white;
+  border: none;
+  padding: 0 12px;
+  border-radius: 6px;
+  width: 150px;
+  font-size: 14px;
+}
+
+/* Search Input */
+.search-input {
+  flex: 1;
+  padding: 0 12px;
+  border-radius: 6px;
+  border: 1px solid #7b1113;
+  background-color: #f7f3ea;
+  font-size: 14px;
+}
+
+/* Search Button */
+.search-btn {
+  background-color: #7b1113;
+  color: white;
+  padding: 0 22px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-btn:hover {
+  background-color: #5e0d0f;
+}
+
+/* =========================
+   DATE ROW
+========================= */
+
+.date-row {
+  display: flex;
+  gap: 60px;
+  align-items: flex-start;
+}
+
+.date-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.date-group label {
+  margin-bottom: 6px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.date-group input {
+  width: 395px;
+  padding: 0 12px;
+  border-radius: 6px;
+  border: 1px solid #7b1113;
+  background-color: #f7f3ea;
+  font-size: 14px;
+}
+
+/* =========================
+   RESULTS SECTION
+========================= */
+
+.results-section {
+  background: #e5dbc7;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+/* Book Card */
+.book-card {
+  display: flex;
+  align-items: center;
+  background: #d8b98a;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  transition: transform 0.2s ease;
+}
+
+.book-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Book Image */
+.book-image {
+  width: 70px;
+  height: 100px;
+  object-fit: cover;
+  margin-right: 15px;
+}
+
+/* Book Info */
+.book-info h3 {
+  margin: 0;
+  color: #7b1113;
+}
+
+.book-info p {
+  margin: 3px 0;
+  font-size: 14px;
+}
+
+/* Arrow */
+.arrow {
+  margin-left: auto;
+  font-size: 20px;
+  color: #7b1113;
+}
+
+/* Empty State */
+.no-results {
+  text-align: center;
+  margin-top: 20px;
+  font-weight: 500;
+}
+
+.card-wrapper {
+  margin-bottom: 20px;
+}
+
+.card-container {
+  position: relative;
+}
+
+.delete-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background-color: #8B0000;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s ease;
+}
+
+.delete-btn:hover {
+  background-color: #b30000;
+  transform: scale(1.05);
+}
+
+.delete-all-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.delete-all-btn {
+  background-color: #8B0000;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.delete-all-btn:hover {
+  background-color: #b30000;
+}

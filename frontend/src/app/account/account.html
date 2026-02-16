@@ -1,0 +1,55 @@
+<div class="layout-container">
+
+  <app-navigation></app-navigation>
+
+  <div class="main-content">
+
+    <div class="account-container">
+
+      <!-- PROFILE SECTION -->
+      <div class="profile-section">
+        <div class="profile-wrapper">
+          <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+               alt="Profile"
+               class="profile-image">
+          <div class="camera-icon">
+            📷
+          </div>
+        </div>
+      </div>
+
+      <!-- LOADING -->
+      <div *ngIf="loading">
+        Loading account information...
+      </div>
+
+      <!-- FORM -->
+      <div class="form-section" *ngIf="!loading && user">
+
+        <div class="form-group">
+          <label>Name:</label>
+          <input type="text" [value]="user.name" readonly>
+        </div>
+
+        <div class="form-group">
+          <label>Email:</label>
+          <input type="text" [value]="user.email" readonly>
+        </div>
+
+        <div class="form-group">
+          <label>Role:</label>
+          <input type="text" [value]="user.role" readonly>
+        </div>
+
+      </div>
+
+      <!-- ERROR STATE -->
+      <div *ngIf="!loading && !user">
+        No account data found.
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,26 @@
+<div class="layout-container">
+
+  <app-navigation></app-navigation>
+
+  <div class="main-content">
+
+    <div class="system-header">
+      <h2>Pinned Books</h2>
+    </div>
+
+    <div class="results-section">
+
+      <div *ngIf="pinnedBooks.length === 0" class="empty-state">
+        No pinned books yet.
+      </div>
+
+      <!-- USE REUSABLE COMPONENT -->
+      <app-book-result
+        *ngFor="let book of pinnedBooks"
+        [book]="book"
+        (pin)="togglePin($event)">
+      </app-book-result>
+
+    </div>
+  </div>
+</div>
