@@ -224,7 +224,6 @@ public class BookManagementServiceImpl implements BookManagementService {
 
         return logs.stream()
                 .filter(log -> log.getBook() != null)
-                .limit(10)
                 .map(log -> {
 
                     Book book = log.getBook();
@@ -237,7 +236,6 @@ public class BookManagementServiceImpl implements BookManagementService {
                     dto.setCoverImageUrl(book.getCoverImageUrl());
                     dto.setPublicationYear(book.getPublicationYear());
 
-                    // 🔥 ADD FULL METADATA
                     dto.setLccn(book.getLccn());
                     dto.setCutterNumber(book.getCutterNumber());
                     dto.setEdition(book.getEdition());

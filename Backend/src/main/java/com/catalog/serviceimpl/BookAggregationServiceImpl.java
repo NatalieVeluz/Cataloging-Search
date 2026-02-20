@@ -41,7 +41,7 @@ public class BookAggregationServiceImpl implements BookAggregationService {
     }
 
     // =====================================================
-    // ISBN SEARCH
+    // ISBN SEARCH (DB-FIRST)
     // =====================================================
     @Override
     public BookResponseDTO searchByIsbn(String isbn, String userEmail) {
@@ -82,11 +82,27 @@ public class BookAggregationServiceImpl implements BookAggregationService {
     }
 
     // =====================================================
-    // TITLE SEARCH
+    // TITLE SEARCH (DB-FIRST)
     // =====================================================
     @Override
     public List<BookResponseDTO> searchByTitle(String title, String userEmail) {
 
+        // 1️⃣ CHECK DATABASE FIRST
+        List<Book> dbResults =
+                bookRepository.findByTitleContainingIgnoreCaseOrderByIdDesc(title);
+
+        if (!dbResults.isEmpty()) {
+
+            dbResults.forEach(book ->
+                    logSearch(book, title, SearchType.TITLE, userEmail)
+            );
+
+            return dbResults.stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
+        }
+
+        // 2️⃣ FETCH FROM APIs IF EMPTY
         List<BookResponseDTO> combinedResults = new ArrayList<>();
 
         combinedResults.addAll(locService.searchByTitle(title));
@@ -120,6 +136,9 @@ public class BookAggregationServiceImpl implements BookAggregationService {
                         )
                 );
 
+                if (dto.getMetadataSource() == null)
+                    dto.setMetadataSource("Multiple Sources");
+
                 book = saveToDatabase(dto);
             }
 
@@ -131,11 +150,27 @@ public class BookAggregationServiceImpl implements BookAggregationService {
     }
 
     // =====================================================
-    // AUTHOR SEARCH
+    // AUTHOR SEARCH (DB-FIRST)
     // =====================================================
     @Override
     public List<BookResponseDTO> searchByAuthor(String author, String userEmail) {
 
+        // 1️⃣ CHECK DATABASE FIRST
+        List<Book> dbResults =
+                bookRepository.findByAuthorsContainingIgnoreCaseOrderByIdDesc(author);
+
+        if (!dbResults.isEmpty()) {
+
+            dbResults.forEach(book ->
+                    logSearch(book, author, SearchType.AUTHOR, userEmail)
+            );
+
+            return dbResults.stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
+        }
+
+        // 2️⃣ FETCH FROM APIs IF EMPTY
         List<BookResponseDTO> combinedResults = new ArrayList<>();
 
         combinedResults.addAll(locService.searchByAuthor(author));
@@ -168,6 +203,9 @@ public class BookAggregationServiceImpl implements BookAggregationService {
                                         : dto.getTitle()
                         )
                 );
+
+                if (dto.getMetadataSource() == null)
+                    dto.setMetadataSource("Multiple Sources");
 
                 book = saveToDatabase(dto);
             }
@@ -236,7 +274,7 @@ public class BookAggregationServiceImpl implements BookAggregationService {
     }
 
     // =====================================================
-    // SAVE BOOK & RETURN ENTITY
+    // SAVE BOOK
     // =====================================================
     private Book saveToDatabase(BookResponseDTO dto) {
 
@@ -282,9 +320,6 @@ public class BookAggregationServiceImpl implements BookAggregationService {
         return dto;
     }
 
-    // =====================================================
-    // SAVE SEARCH LOG WITH FK
-    // =====================================================
     private void logSearch(Book book, String query, SearchType type, String userEmail) {
 
         if (book == null)
