@@ -9,7 +9,6 @@ import { BookService } from '../services/book.service';
 import { PinService } from '../services/pin.service';
 import { BookResult } from '../book-result/book-result';
 
-
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -37,10 +36,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   results: any[] = [];
   selectedBook: any = null;
   isLoading: boolean = false;
+  hasSearched: boolean = false;   // 🔥 NEW
 
   private pinSubscription!: Subscription;
-
-  // ================= INIT =================
 
   ngOnInit(): void {
     this.pinSubscription = this.pinService.pinnedIsbns$
@@ -64,12 +62,18 @@ export class HomeComponent implements OnInit, OnDestroy {
       return;
     }
 
+    this.results = [];          // clear old results
     this.isLoading = true;
+    this.hasSearched = true;    // 🔥 mark that search was triggered
 
     this.bookService.searchBooks(this.searchType, this.searchQuery)
       .subscribe({
         next: (data) => {
-          this.results = Array.isArray(data) ? data : [data];
+
+          this.results = Array.isArray(data)
+            ? data
+            : (data ? [data] : []);
+
           this.updatePinnedState();
           this.isLoading = false;
         },
@@ -124,34 +128,46 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   submitManualCatalog(): void {
 
-  if (!this.manualBook.isbn || !this.manualBook.title) {
-    alert('ISBN and Title are required.');
-    return;
-  }
+    if (!this.manualBook.isbn.trim()) {
+      alert('ISBN is required.');
+      return;
+    }
 
-  this.bookService.saveManualBook(this.manualBook)
-    .subscribe({
-      next: (savedBook) => {
+    this.bookService.saveManualBook(this.manualBook)
+      .subscribe({
+        next: (savedBook) => {
 
-        // 🔥 remove alert here
+          this.results = [savedBook, ...this.results];
+          this.updatePinnedState();
 
-        this.results = [savedBook, ...this.results];
-        this.updatePinnedState();
+          this.manualBook = {
+            isbn: '',
+            title: '',
+            authors: '',
+            lccn: '',
+            cutterNumber: '',
+            publisher: '',
+            edition: '',
+            publicationYear: ''
+          };
+        },
 
-        this.manualBook = {
-          isbn: '',
-          title: '',
-          authors: '',
-          lccn: '',
-          cutterNumber: '',
-          publisher: '',
-          edition: '',
-          publicationYear: ''
-        };
-      },
-      error: (err) => {
-        alert(err.error?.message || 'Failed to save manual entry.');
-      }
-    });
+        error: (err) => {
+
+          if (err.status === 409) {
+
+            this.bookService.getBookByIsbn(this.manualBook.isbn)
+              .subscribe(existingBook => {
+
+                this.results = [existingBook, ...this.results];
+                this.updatePinnedState();
+
+              });
+
+          } else {
+            alert('Failed to save manual entry.');
+          }
+        }
+      });
   }
 }

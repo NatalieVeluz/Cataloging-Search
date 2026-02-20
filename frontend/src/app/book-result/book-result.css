@@ -1,40 +1,52 @@
 /* ================= RESULT CARD ================= */
-
 .result-card {
   display: flex;
   align-items: center;
-  background: #e6c89c;
-  padding: 15px;
-  border-radius: 12px;
-  margin-bottom: 15px;
-  gap: 15px;
+  background: #ffffff;
+  padding: 25px 25px 25px 45px; /* more breathing room */
+  border-radius: 18px;
+  margin-bottom: 22px;
+  gap: 25px;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+/* PERFECTLY CENTERED ACCENT BAR */
+.result-card::before {
+  content: "";
+  position: absolute;
+  left: 18px;           /* space from card edge */
+  top: 0;
+  bottom: 0;
+  width: 15px;
+  background: #7B1E14;  /* solid maroon (cleaner look) */
 }
 
 .result-card:hover {
-  transform: scale(1.01);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
 }
 
 /* ================= COVER ================= */
 
 .book-cover img {
-  width: 70px;
-  height: 100px;
+  width: 75px;
+  height: 110px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .no-cover {
-  width: 70px;
-  height: 100px;
+  width: 75px;
+  height: 110px;
   background: #f5e6cc;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 30px;
-  border-radius: 4px;
+  font-size: 28px;
+  border-radius: 6px;
 }
 
 /* ================= INFO ================= */
@@ -45,14 +57,15 @@
 
 .book-info h4 {
   margin: 0;
-  font-size: 16px;
-  font-weight: bold;
-  color: #7B1E14;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c2c2c;
 }
 
 .book-info p {
   margin: 4px 0;
   font-size: 14px;
+  color: #555;
 }
 
 /* ================= ACTIONS ================= */
@@ -62,22 +75,22 @@
   align-items: center;
 }
 
+/* Pin button */
 .pin-btn {
-  background-color: #c49b3f;
+  background-color: #f4d35e;
   color: #7B1E14;
   border: none;
   border-radius: 50%;
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
   font-size: 16px;
-  margin-right: 8px;
-  transition: all 0.2s ease;
+  margin-right: 12px;
+  transition: 0.2s ease;
 }
 
 .pin-btn:hover {
-  background-color: #a67c25;
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
 
 .pin-btn.pinned {
@@ -86,20 +99,20 @@
 }
 
 .pin-btn.pinned:hover {
-  background-color: #7B1E14;
-  transform: none;
+  background-color: #5e140d;
 }
 
+/* Arrow button */
 .action-btn {
   background-color: #7B1E14;
   color: white;
   border: none;
   border-radius: 50%;
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
   font-size: 16px;
-  transition: background 0.2s ease;
+  transition: 0.2s ease;
 }
 
 .action-btn:hover {
@@ -114,7 +127,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.35);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -122,13 +135,14 @@
 }
 
 .details-modal {
-  background: #d6c19c; /* kept your original tone */
+  background: #ffffff;
   width: 900px;
   max-width: 95%;
   padding: 35px;
-  border-radius: 12px;
+  border-radius: 16px;
   max-height: 90vh;
   overflow-y: auto;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
 }
 
 /* ================= HEADER ================= */
@@ -140,18 +154,23 @@
 }
 
 .close-btn {
-  background: #7B1E14;
-  color: white;
+  background: #e0e0e0;
+  color: #333;
   border: none;
   width: 40px;
   height: 40px;
   border-radius: 50%;
   font-size: 18px;
   cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.close-btn:hover {
+  background: #c7c7c7;
 }
 
 .modal-pin-btn {
-  background-color: #c49b3f;
+  background-color: #f4d35e;
   color: #7B1E14;
   border: none;
   border-radius: 50%;
@@ -169,7 +188,8 @@
 .details-divider {
   height: 3px;
   background-color: #7B1E14;
-  margin: 15px 0 25px 0;
+  margin: 20px 0 30px 0;
+  border-radius: 2px;
 }
 
 /* ================= COVER ================= */
@@ -183,10 +203,10 @@
   width: 200px;
   height: 280px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 10px;
 }
 
-/* ================= DETAILS (STACKED LEFT ALIGN) ================= */
+/* ================= DETAILS ================= */
 
 .details-content {
   margin-top: 10px;
@@ -200,7 +220,7 @@
 
 .details-row label {
   font-weight: 600;
-  color: #7B1E14;
+  color: #333;
   margin-bottom: 6px;
 }
 
@@ -208,9 +228,9 @@
 
 .details-box {
   background: #f4f4f4;
-  padding: 8px 12px;
-  border: 1px solid #7B1E14;
-  border-radius: 4px;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
   min-height: 38px;
   display: flex;
   align-items: center;
@@ -221,10 +241,10 @@
 
 .details-modal input {
   width: 100%;
-  padding: 8px 12px;
-  background: #f4f4f4;
-  border: 1px solid #7B1E14;
-  border-radius: 4px;
+  padding: 10px 12px;
+  background: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 6px;
   min-height: 38px;
   box-sizing: border-box;
 }
@@ -234,8 +254,8 @@
 .details-textarea {
   background: #f4f4f4;
   padding: 12px;
-  border: 1px solid #7B1E14;
-  border-radius: 4px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
   height: 200px;
   overflow-y: auto;
   box-sizing: border-box;
@@ -246,9 +266,9 @@
 .details-modal textarea {
   width: 100%;
   padding: 12px;
-  background: #f4f4f4;
-  border: 1px solid #7B1E14;
-  border-radius: 4px;
+  background: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 6px;
   height: 200px;
   resize: none;
   box-sizing: border-box;
@@ -257,7 +277,7 @@
 /* ================= BUTTONS ================= */
 
 .edit-actions {
-  margin-top: 25px;
+  margin-top: 30px;
   display: flex;
   gap: 10px;
 }
@@ -268,15 +288,29 @@
   color: white;
   border: none;
   padding: 8px 18px;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.edit-btn:hover,
+.save-btn:hover {
+  background-color: #5e140d;
 }
 
 .cancel-btn {
-  background-color: #c49b3f;
-  color: #7B1E14;
+  background-color: #e0e0e0;
+  color: #333;
   border: none;
   padding: 8px 18px;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
+  margin-left: 15px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* ✅ GOLD HOVER ONLY */
+.cancel-btn:hover {
+  background-color: #c49b3f;  /* gold */
+  color: #7b1113;             /* maroon text */
 }

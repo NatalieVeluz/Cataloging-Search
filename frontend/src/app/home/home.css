@@ -1,195 +1,207 @@
-/* ================= GLOBAL ================= */
-
-body {
-  margin: 0;
-}
-
-/* IMPORTANT: Removed font-family to match pinned books page */
-.layout-container {
-  display: flex;
-  min-height: 100vh;
-}
-
 /* ================= MAIN CONTENT ================= */
 
-.main-content {
-  flex: 1;
-  padding: 40px 30px;
-  background-color: #e9e2d0;
-  display: flex;
-  flex-direction: column;
-  margin-left: 250px;
+.layout-container {
+  width: 100%;
 }
 
-/* ================= BODY WRAPPER ================= */
+/* Push below header and beside sidebar */
+.main-content {
+  margin-top: 90px;
+  margin-left: 250px;
+  padding: 30px;
+  background-color: #f1eae9;
+  min-height: calc(100vh - 90px);
+  box-sizing: border-box;
+}
+
+/* Full width container */
+.content-wrapper {
+  width: 100%;
+}
+
+/* ================= BODY LAYOUT ================= */
 
 .content-body {
   display: flex;
   gap: 30px;
-  flex: 1;
+  align-items: stretch;
+  width: 100%;
 }
 
 /* ================= LEFT SIDE ================= */
 
 .left-content {
-  width: 40%;
+  flex: 0 0 45%;
   display: flex;
   flex-direction: column;
-  gap: 40px;
-}
-
-/* ================= SEARCH ================= */
-
-.search-section {
-  background: #dcd3bf;
-  padding: 25px;
-  border-radius: 10px;
-}
-
-.search-section h3 {
-  margin-top: 0;
-  color: #7B1E14;
-  font-weight: 600;
-}
-
-.search-row {
-  display: flex;
-  gap: 12px;
-  margin-top: 10px;
-  align-items: center;
-}
-
-.search-row select,
-.search-input {
-  height: 42px;
-  padding: 0 12px;
-  border: 1px solid #7B1E14;
-  border-radius: 6px;
-  background-color: #f7f3ea;
-  font-size: 14px;
-  font-family: inherit; /* keeps same font */
-}
-
-.search-row select {
-  background-color: #7B1E14;
-  color: white;
-  border: none;
-  width: 140px;
-}
-
-.search-input {
-  width: 100%;
-  max-width: 420px;
-}
-
-.search-row button {
-  height: 42px;
-  background-color: #7B1E14;
-  color: white;
-  border: none;
-  padding: 0 22px;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: background 0.2s ease;
-  font-size: 14px;
-}
-
-.search-row button:hover {
-  background-color: #5e140d;
-}
-
-/* ================= MANUAL FORM ================= */
-
-.manual-section {
-  background: #dcd3bf;
-  padding: 25px;
-  border-radius: 10px;
-}
-
-.manual-section h3 {
-  margin-top: 0;
-  color: #7B1E14;
-  font-weight: 600;
-}
-
-/* FORM LAYOUT UPDATED */
-.manual-section form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px; /* slightly more spacing like modal */
-}
-
-/* NEW: form-group for stacked labels */
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-/* NEW: label styling to match modal */
-.form-group label {
-  font-weight: 600;
-  color: #7B1E14;
-  font-size: 12px;      /* slightly smaller */
-}
-
-/* Inputs */
-.manual-section input {
-  height: 30px;
-  padding: 0 10px;
-  border: 1px solid #7B1E14;
-  border-radius: 6px;
-  background-color: #f7f3ea;
-  font-size: 12px;
-
-  font-family: inherit;
-  color: inherit;
-}
-
-
-/* Save Button */
-.save-btn {
-  height: 42px;
-  background-color: #7B1E14;
-  color: white;
-  border: none;
-  margin-top: 10px;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: background 0.2s ease;
-  font-weight: 600;
-}
-
-.save-btn:hover {
-  background-color: #5e140d;
+  gap: 30px;
 }
 
 /* ================= RESULTS ================= */
 
 .results-section {
-  width: 60%;
-  background: #e5dbc7;
-  padding: 25px;
-  border-radius: 12px;
-  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
+/* ================= CARD STYLE ================= */
+
+.search-section,
+.manual-section,
+.results-section {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* Section titles */
+.search-section h3,
+.manual-section h3,
 .results-section h3 {
   margin-top: 0;
+  margin-bottom: 20px;
   color: #7B1E14;
   font-weight: 600;
 }
 
-.empty-state {
-  color: gray;
-  margin-top: 20px;
-  font-style: italic;
+/* ================= SEARCH ================= */
+
+.search-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* 🔥 Centered dropdown */
+.search-row select {
+  height: 42px;
+  width: 130px;
+  background-color: #7B1E14;
+  color: white;
+  border: none;
+  border-radius: 8px;
+
+  text-align: center;
+  text-align-last: center;   /* centers selected text */
+  padding-left: 0;
+  cursor: pointer;
+}
+
+/* Center dropdown options */
+.search-row select option {
   text-align: center;
 }
 
-/* ================= TITLE ================= */
+/* Search input with red border */
+.search-input {
+  flex: 1;
+  height: 42px;
+  padding: 0 12px;
+  border: 2px solid #7B1E14;
+  border-radius: 8px;
+  background-color: #fafafa;
+  transition: 0.2s ease;
+}
 
-.title {
-  text-align: center;
-  margin-bottom: 30px;
+.search-input:focus {
+  outline: none;
+  border-color: #b31212;
+  box-shadow: 0 0 0 3px rgba(179, 18, 18, 0.15);
+}
+
+.search-row button {
+  height: 42px;
+  background: linear-gradient(to right, #8B0000, #b31212);
+  color: white;
+  border: none;
+  padding: 0 22px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.search-row button:hover {
+  opacity: 0.9;
+}
+
+/* ================= FORM ================= */
+
+.manual-section form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
   font-weight: 600;
+  color: #7B1E14;
+  font-size: 13px;
+}
+
+/* 🔥 Red bordered inputs */
+.manual-section input {
+  height: 36px;
+  padding: 0 12px;
+  border: 2px solid #7B1E14;
+  border-radius: 8px;
+  background-color: #fafafa;
+  transition: 0.2s ease;
+}
+
+.manual-section input:focus {
+  outline: none;
+  border-color: #b31212;
+  box-shadow: 0 0 0 3px rgba(179, 18, 18, 0.15);
+}
+
+/* Save button */
+.save-btn {
+  height: 44px;
+  margin-top: 10px;
+  background: linear-gradient(to right, #8B0000, #b31212);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.save-btn:hover {
+  opacity: 0.9;
+}
+
+/* ================= LOADING ================= */
+
+.loading-container {
+  text-align: center;
+  padding: 40px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #8B0000;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 15px;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+.empty-state {
+  text-align: center;
+  margin-top: 30px;
+  font-weight: 500;
+  color: #888;
 }

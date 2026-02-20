@@ -91,7 +91,7 @@ export class BookService {
   updatePinnedBook(isbn: string, book: any): Observable<any> {
     const userEmail = this.getUserEmail();
     return this.http.put(
-      `${this.booksUrl}/update/${isbn}?userEmail=${userEmail}`,
+      `${this.booksUrl}/${isbn}?userEmail=${userEmail}`,
       book
     );
   }

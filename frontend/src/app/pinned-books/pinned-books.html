@@ -1,18 +1,16 @@
 <div class="layout-container">
 
-  <app-navigation></app-navigation>
 
   <div class="main-content">
 
     <div class="content-wrapper">
-
-      <h2 class="title">
-        The Mapúan Cataloging Search Resources Platform<br>
-        Pinned Books
-      </h2>
-
       <!-- ================= FILTER SECTION ================= -->
       <div class="filter-section">
+
+        <!-- Title inside card (top-left visible) -->
+        <div class="filter-header">
+          <h2 class="page-title">Pinned Books</h2>
+        </div>
 
         <div class="search-row">
 
@@ -30,7 +28,7 @@
           />
 
           <button class="search-btn" (click)="search()">Search</button>
-          <button class="search-btn" (click)="resetFilters()">Reset</button>
+          <button class="reset-btn" (click)="resetFilters()">Reset</button>
 
         </div>
 
@@ -49,28 +47,22 @@
           class="card-wrapper"
           *ngFor="let book of paginatedBooks; trackBy: trackByIsbn">
 
-          <div class="card-container">
-
-            <app-book-result
-              [book]="book"
-              (pin)="togglePin($event)">
-            </app-book-result>
-
-          </div>
+          <app-book-result
+            [book]="book"
+            (pin)="togglePin($event)">
+          </app-book-result>
 
         </div>
 
         <!-- ================= PAGINATION ================= -->
         <div class="pagination" *ngIf="totalPages > 1">
 
-          <!-- PREVIOUS -->
           <button
             (click)="prevPage()"
             [disabled]="currentPage === 1">
             ◀
           </button>
 
-          <!-- PAGE NUMBERS -->
           <button
             *ngFor="let page of [].constructor(totalPages); let i = index"
             [class.active]="currentPage === i + 1"
@@ -78,7 +70,6 @@
             {{ i + 1 }}
           </button>
 
-          <!-- NEXT -->
           <button
             (click)="nextPage()"
             [disabled]="currentPage === totalPages">

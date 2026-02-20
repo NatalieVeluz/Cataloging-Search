@@ -1,24 +1,79 @@
-/* MAIN CONTENT AREA */
+/* ================= GLOBAL ================= */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #e9e5e4;
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* ================= LAYOUT ================= */
+
+.layout-container {
+  width: 100%;
+  min-height: 100vh;   /* 🔥 force full viewport height */
+}
+
+/* MAIN CONTENT */
 .main-content {
-  margin-left: 220px; /* matches sidebar */
-  background-color: #e9e2d0;
-  height: 100vh;
-
-  display: flex;
-  justify-content: center;   /* horizontal center */
-  align-items: center;       /* vertical center */
+  margin-left: 250px;
+  padding: 60px 70px;
+  background: #e9e5e4;
+  min-height: 100vh;   /* 🔥 THIS fixes bottom gap */
 }
 
-/* ACCOUNT CARD */
-.account-container {
-  background-color: #d6cbb3;
-  padding: 50px 60px;
-  border-radius: 16px;
-  width: 600px;              /* smaller fixed width */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+/* CONTENT WRAPPER */
+.content-wrapper {
+  background: #e9e5e4;
+  padding: 50px;
+  border-radius: 22px;
+  min-height: calc(100vh - 120px); /* 🔥 extend properly */
 }
 
-/* PROFILE SECTION */
+/* ================= TITLE ================= */
+
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #7B1E14;
+  margin-bottom: 35px;
+  letter-spacing: 0.5px;
+  position: relative;
+}
+
+.title::after {
+  content: "";
+  display: block;
+  width: 65px;
+  height: 3px;
+  background: #7B1E14;
+  margin-top: 12px;
+  border-radius: 2px;
+}
+
+/* ================= ACCOUNT CARD ================= */
+
+.account-card {
+  background: #f4f4f4; /* same outer card as pinned books */
+  padding: 40px;
+  border-radius: 18px;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.07);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* INNER GOLD STYLE */
+.account-card-inner {
+  background: #d8c39c;
+  border-radius: 14px;
+  padding: 30px;
+}
+
+/* ================= PROFILE ================= */
+
 .profile-section {
   display: flex;
   justify-content: center;
@@ -36,40 +91,59 @@
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
+  border: 4px solid #ffffff;
 }
 
-/* CAMERA ICON */
 .camera-icon {
   position: absolute;
-  bottom: 8px;
-  right: 8px;
+  bottom: 10px;
+  right: 10px;
   background-color: #7B1E14;
   color: white;
-  width: 35px;
-  height: 35px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  font-size: 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-/* FORM SECTION */
+/* ================= FORM ================= */
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 .form-group {
   display: flex;
-  align-items: center;
-  margin-bottom: 20px;
+  flex-direction: column;
 }
 
 .form-group label {
-  width: 80px;
-  font-weight: 500;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #7B1E14;
 }
 
 .form-group input {
-  flex: 1;
-  padding: 10px;
+  height: 46px;
+  padding: 0 14px;
+  border-radius: 10px;
   border: 2px solid #7B1E14;
-  border-radius: 6px;
-  background-color: #f4efe4;
+  background: #ffffff;
+  font-size: 14px;
+}
+
+/* ================= STATUS ================= */
+
+.status-text {
+  text-align: center;
+  margin-top: 20px;
+  color: #777;
+  font-weight: 500;
 }

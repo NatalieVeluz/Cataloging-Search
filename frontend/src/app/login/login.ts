@@ -17,10 +17,16 @@ export class LoginComponent {
   password: string = '';
   errorMessage: string = '';
 
+  showPassword: boolean = false;
+
   constructor(
     private authService: AuthService,
     private router: Router
   ) {}
+
+  togglePassword(): void {
+    this.showPassword = !this.showPassword;
+  }
 
   login() {
     this.errorMessage = '';
@@ -29,19 +35,14 @@ export class LoginComponent {
       .subscribe({
         next: (response: any) => {
 
-          console.log('Login successful:', response);
-
-          // 🔥 SAVE USER DATA TO LOCAL STORAGE
           localStorage.setItem('userId', response.userId);
           localStorage.setItem('userName', response.name);
           localStorage.setItem('userEmail', response.email);
           localStorage.setItem('userRole', response.role);
 
-          // Redirect to home
           this.router.navigate(['/home']);
         },
         error: (error) => {
-          console.error('Login failed:', error);
           this.errorMessage = error.error?.message || 'Login failed';
         }
       });

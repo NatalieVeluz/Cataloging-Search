@@ -1,81 +1,101 @@
-/* ================= SIDEBAR ================= */
-
 .sidebar {
-  width: 220px;
-  background-color: #d6cbb3;
-  padding: 20px;
+  position: fixed;
+  top: 90px;
+  left: 0;
+  width: 250px;
+  height: calc(100vh - 90px);
+
+  background: linear-gradient(
+    180deg,
+    #8B0000 0%,
+    #7B1E14 50%,
+    #5e160f 100%
+  );
+
+  padding: 25px 20px;
+  box-sizing: border-box;
+
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
 }
 
-/* ================= LOGO ================= */
-
-.logo {
-  background-color: #7B1E14;
-  color: white;
-  padding: 10px;
-  text-align: center;
-  border-radius: 20px;
-  margin-bottom: 30px;
-  font-weight: bold;
-  font-size: 16px;
-}
-
-/* ================= MENU SECTION ================= */
+/* ================= MENU SECTIONS ================= */
 
 .menu-section {
   display: flex;
   flex-direction: column;
+  gap: 14px;
+}
+
+.bottom-section {
+  margin-top: auto;
+  padding-top: 25px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* ================= MENU ITEMS ================= */
 
 .menu {
-  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 14px 16px;
+  border-radius: 10px;
   cursor: pointer;
-  margin-bottom: 10px;
-  border-radius: 6px;
-  transition: background-color 0.2s ease;
+
+  font-size: 15px;
+  font-weight: 500;
+  color: white;
+
+  transition: all 0.25s ease;
 }
 
-.menu.active {
-  background-color: #e6dbc3;
-  font-weight: bold;
+/* ICON STYLE */
+.icon svg {
+  width: 20px;
+  height: 20px;
+  fill: white;
+  transition: 0.25s ease;
 }
 
+/* Hover */
 .menu:hover {
-  background-color: #c8b89d;
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateX(5px);
 }
 
-/* ================= BOTTOM SECTION ================= */
-
-.bottom-section {
-  margin-top: auto;
-  margin-bottom: 30px;
-  padding-top: 20px;
-  border-top: 1px solid rgba(0, 0, 0, 0.1); /* 🔥 subtle separator */
+/* Active */
+.menu.active {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.25),
+    rgba(255,255,255,0.1)
+  );
+  border-left: 4px solid #c49b3f;
+  padding-left: 12px;
+  font-weight: 600;
 }
 
-/* ================= LOGOUT STYLE ================= */
+/* Active icon gold */
+.menu.active .icon svg {
+  fill: #c49b3f;
+}
+
+/* ================= LOGOUT ================= */
 
 .logout {
-  background-color: #7B1E14;
-  color: white;
-  text-align: center;
-  font-weight: bold;
-  padding: 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  background: rgba(255,255,255,0.1);
+  justify-content: center;
+  font-weight: 600;
 }
 
 .logout:hover {
-  background-color: #5e160f;
-  transform: scale(1.02);
+  background: #c49b3f;
+  color: #7B1E14;
+  transform: scale(1.03);
+}
+
+.logout:hover .icon svg {
+  fill: #7B1E14;
 }

@@ -1,199 +1,146 @@
-/* =========================
-   GLOBAL FIX
-========================= */
-
 * {
   box-sizing: border-box;
 }
 
-/* =========================
-   LAYOUT
-========================= */
+/* ================= LAYOUT ================= */
 
 .layout-container {
   display: flex;
   min-height: 100vh;
-  background-color: #e9e2d0;
+  background-color: #f5f2f1;
 }
 
 .main-content {
   flex: 1;
   display: flex;
   justify-content: center;
-  padding: 40px 20px;
-  margin-left: 250px; /* same width as sidebar */
+  padding: 30px 20px 50px 20px;
+  margin-left: 250px; /* sidebar width */
 }
 
 .content-wrapper {
-  width: 900px;
+  width: 1100px;
+  max-width: 95%;
 }
 
-/* =========================
-   TITLE
-========================= */
+/* ================= PAGE HEADER ================= */
 
-.title {
-  text-align: center;
-  margin-bottom: 30px;
-  font-weight: 600;
-}
-
-/* =========================
-   FILTER SECTION
-========================= */
-
-.filter-section {
-  background: #dcd3bf;
-  padding: 25px;
-  border-radius: 10px;
-  margin-bottom: 30px;
-}
-
-/* SEARCH ROW */
-.search-row {
+.page-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  margin-top: 100px; /* aligns with pinned books */
   margin-bottom: 25px;
 }
 
-/* Shared height for ALL controls */
+.page-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #7b1113;
+}
+
+/* ================= DELETE ALL ================= */
+
+.delete-all-btn {
+  background-color: #7b1113;
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.delete-all-btn:hover {
+  background-color: #5e140d;
+}
+
+/* ================= FILTER ================= */
+
+.filter-section {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 18px;
+  margin-bottom: 35px;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.05);
+}
+
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
 .search-select,
 .search-input,
 .search-btn,
-.date-group input {
-  height: 42px;
+.reset-btn {
+  height: 46px;
+  border-radius: 8px;
+  font-size: 14px;
 }
 
-/* Dropdown */
 .search-select {
   background-color: #7b1113;
   color: white;
   border: none;
-  padding: 0 12px;
-  border-radius: 6px;
-  width: 150px;
-  font-size: 14px;
+  padding: 0 14px;
+  width: 160px;
 }
 
-/* Search Input */
 .search-input {
   flex: 1;
-  padding: 0 12px;
-  border-radius: 6px;
+  padding: 0 14px;
   border: 1px solid #7b1113;
-  background-color: #f7f3ea;
-  font-size: 14px;
+  background-color: #ffffff;
 }
 
-/* Search Button */
 .search-btn {
   background-color: #7b1113;
   color: white;
-  padding: 0 22px;
+  padding: 0 26px;
   border: none;
-  border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .search-btn:hover {
   background-color: #5e0d0f;
 }
 
-/* =========================
-   DATE ROW
-========================= */
-
-.date-row {
-  display: flex;
-  gap: 60px;
-  align-items: flex-start;
+.reset-btn {
+  background-color: #e0e0e0;
+  color: #333;
+  padding: 0 26px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.date-group {
-  display: flex;
-  flex-direction: column;
+/* ✅ GOLD HOVER ONLY */
+.reset-btn:hover {
+  background-color: #c49b3f;  /* gold */
+  color: #7b1113;             /* maroon text */
 }
 
-.date-group label {
-  margin-bottom: 6px;
-  font-weight: 500;
-  font-size: 14px;
-}
-
-.date-group input {
-  width: 395px;
-  padding: 0 12px;
-  border-radius: 6px;
-  border: 1px solid #7b1113;
-  background-color: #f7f3ea;
-  font-size: 14px;
-}
-
-/* =========================
-   RESULTS SECTION
-========================= */
+/* ================= RESULTS ================= */
 
 .results-section {
-  background: #e5dbc7;
-  padding: 20px;
-  border-radius: 12px;
-}
-
-/* Book Card */
-.book-card {
-  display: flex;
-  align-items: center;
-  background: #d8b98a;
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 15px;
-  transition: transform 0.2s ease;
-}
-
-.book-card:hover {
-  transform: translateY(-2px);
-}
-
-/* Book Image */
-.book-image {
-  width: 70px;
-  height: 100px;
-  object-fit: cover;
-  margin-right: 15px;
-}
-
-/* Book Info */
-.book-info h3 {
-  margin: 0;
-  color: #7b1113;
-}
-
-.book-info p {
-  margin: 3px 0;
-  font-size: 14px;
-}
-
-/* Arrow */
-.arrow {
-  margin-left: auto;
-  font-size: 20px;
-  color: #7b1113;
-}
-
-/* Empty State */
-.no-results {
-  text-align: center;
-  margin-top: 20px;
-  font-weight: 500;
+  background: #ffffff;
+  padding: 35px;
+  border-radius: 18px;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.05);
 }
 
 .card-wrapper {
-  margin-bottom: 20px;
+  margin-bottom: 28px;
+}
+
+.log-meta {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 8px;
 }
 
 .card-container {
@@ -202,39 +149,57 @@
 
 .delete-btn {
   position: absolute;
-  bottom: 12px;
-  right: 12px;
-  background-color: #8B0000;
+  top: 15px;
+  right: 15px;
+  background-color: #a31621;
   color: white;
   border: none;
-  padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
   cursor: pointer;
-  font-size: 14px;
-  transition: 0.2s ease;
 }
 
 .delete-btn:hover {
-  background-color: #b30000;
-  transform: scale(1.05);
+  background-color: #d00000;
 }
 
-.delete-all-container {
+.no-results {
+  text-align: center;
+  margin-top: 20px;
+  font-weight: 500;
+}
+/* ================= PAGINATION ================= */
+
+.pagination {
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 20px;
+  justify-content: center;
+  margin-top: 30px;
+  gap: 8px;
 }
 
-.delete-all-btn {
-  background-color: #8B0000;
-  color: white;
-  border: none;
+.pagination button {
   padding: 8px 14px;
+  border: none;
   border-radius: 8px;
+  background-color: #7b1113;
+  color: white;
   cursor: pointer;
-  font-weight: 600;
+  transition: 0.2s ease;
+  font-size: 14px;
 }
 
-.delete-all-btn:hover {
-  background-color: #b30000;
+.pagination button:hover {
+  background-color: #5e0d0f;
+}
+
+.pagination button.active {
+  background-color: #c49b3f;   /* gold highlight */
+  color: #7b1113;
+  font-weight: bold;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

@@ -27,6 +27,11 @@ export class SearchLogsComponent implements OnInit {
 
   isLoading: boolean = false;
 
+  // ================= PAGINATION =================
+  currentPage: number = 1;
+  itemsPerPage: number = 10;
+  totalPages: number = 1;
+
   constructor(
     private searchLogsService: SearchLogsService,
     private pinService: PinService
@@ -45,8 +50,14 @@ export class SearchLogsComponent implements OnInit {
       .getBooks(this.keyword, this.searchBy)
       .subscribe({
         next: (data) => {
+
           this.logs = data;
           this.updatePinnedState();
+
+          // Pagination calculation
+          this.totalPages = Math.ceil(this.logs.length / this.itemsPerPage);
+          this.currentPage = 1;
+
           this.isLoading = false;
         },
         error: (err) => {
@@ -54,6 +65,29 @@ export class SearchLogsComponent implements OnInit {
           this.isLoading = false;
         }
       });
+  }
+
+  // ================= PAGINATED VIEW =================
+  get paginatedLogs(): SearchLog[] {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    return this.logs.slice(start, start + this.itemsPerPage);
+  }
+
+  // ================= PAGE CONTROLS =================
+  changePage(page: number): void {
+    this.currentPage = page;
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
   }
 
   // ================= SEARCH =================
@@ -81,15 +115,10 @@ export class SearchLogsComponent implements OnInit {
 
   // ================= DELETE SINGLE =================
   deleteLog(log: SearchLog): void {
-
     this.searchLogsService.deleteLog(log.id)
       .subscribe({
-        next: () => {
-          this.loadBooks(); // 🔥 Always reload from backend (keeps limit 10 correct)
-        },
-        error: (err) => {
-          console.error('Delete failed:', err);
-        }
+        next: () => this.loadBooks(),
+        error: (err) => console.error('Delete failed:', err)
       });
   }
 
@@ -102,12 +131,8 @@ export class SearchLogsComponent implements OnInit {
 
     this.searchLogsService.deleteAllLogs()
       .subscribe({
-        next: () => {
-          this.loadBooks(); // 🔥 Reload for consistency
-        },
-        error: (err) => {
-          console.error('Delete all failed:', err);
-        }
+        next: () => this.loadBooks(),
+        error: (err) => console.error('Delete all failed:', err)
       });
   }
 
