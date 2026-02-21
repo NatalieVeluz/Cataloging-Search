@@ -87,32 +87,29 @@ public class BookAggregationServiceImpl implements BookAggregationService {
     @Override
     public List<BookResponseDTO> searchByTitle(String title, String userEmail) {
 
-        // 1️⃣ CHECK DATABASE FIRST
-        List<Book> dbResults =
-                bookRepository.findByTitleContainingIgnoreCaseOrderByIdDesc(title);
-
-        if (!dbResults.isEmpty()) {
-
-            dbResults.forEach(book ->
-                    logSearch(book, title, SearchType.TITLE, userEmail)
-            );
-
-            return dbResults.stream()
-                    .map(this::convertToDTO)
-                    .collect(Collectors.toList());
-        }
-
-        // 2️⃣ FETCH FROM APIs IF EMPTY
         List<BookResponseDTO> combinedResults = new ArrayList<>();
 
+        // 1️⃣ Always fetch from APIs
         combinedResults.addAll(locService.searchByTitle(title));
         combinedResults.addAll(googleBooksService.searchByTitle(title));
         combinedResults.addAll(openLibraryService.searchByTitle(title));
 
-        List<BookResponseDTO> books = deduplicate(combinedResults);
+        List<BookResponseDTO> apiResults = deduplicate(combinedResults);
+
+        // 2️⃣ Also fetch manual entries from DB
+        List<Book> dbResults =
+                bookRepository.findByTitleContainingIgnoreCaseOrderByIdDesc(title);
+
         List<BookResponseDTO> finalResults = new ArrayList<>();
 
-        for (BookResponseDTO dto : books) {
+        // Add DB results first (manual catalog priority)
+        for (Book dbBook : dbResults) {
+            logSearch(dbBook, title, SearchType.TITLE, userEmail);
+            finalResults.add(convertToDTO(dbBook));
+        }
+
+        // 3️⃣ Process API results
+        for (BookResponseDTO dto : apiResults) {
 
             Book book;
 
@@ -143,7 +140,14 @@ public class BookAggregationServiceImpl implements BookAggregationService {
             }
 
             logSearch(book, title, SearchType.TITLE, userEmail);
-            finalResults.add(convertToDTO(book));
+
+            // Avoid duplicate in final list
+            boolean alreadyAdded = finalResults.stream()
+                    .anyMatch(b -> b.getIsbn().equals(book.getIsbn()));
+
+            if (!alreadyAdded) {
+                finalResults.add(convertToDTO(book));
+            }
         }
 
         return finalResults;
@@ -155,32 +159,27 @@ public class BookAggregationServiceImpl implements BookAggregationService {
     @Override
     public List<BookResponseDTO> searchByAuthor(String author, String userEmail) {
 
-        // 1️⃣ CHECK DATABASE FIRST
-        List<Book> dbResults =
-                bookRepository.findByAuthorsContainingIgnoreCaseOrderByIdDesc(author);
-
-        if (!dbResults.isEmpty()) {
-
-            dbResults.forEach(book ->
-                    logSearch(book, author, SearchType.AUTHOR, userEmail)
-            );
-
-            return dbResults.stream()
-                    .map(this::convertToDTO)
-                    .collect(Collectors.toList());
-        }
-
-        // 2️⃣ FETCH FROM APIs IF EMPTY
         List<BookResponseDTO> combinedResults = new ArrayList<>();
 
+        // 1️⃣ Always fetch from APIs
         combinedResults.addAll(locService.searchByAuthor(author));
         combinedResults.addAll(googleBooksService.searchByAuthor(author));
         combinedResults.addAll(openLibraryService.searchByAuthor(author));
 
-        List<BookResponseDTO> books = deduplicate(combinedResults);
+        List<BookResponseDTO> apiResults = deduplicate(combinedResults);
+
+        // 2️⃣ Also fetch manual DB entries
+        List<Book> dbResults =
+                bookRepository.findByAuthorsContainingIgnoreCaseOrderByIdDesc(author);
+
         List<BookResponseDTO> finalResults = new ArrayList<>();
 
-        for (BookResponseDTO dto : books) {
+        for (Book dbBook : dbResults) {
+            logSearch(dbBook, author, SearchType.AUTHOR, userEmail);
+            finalResults.add(convertToDTO(dbBook));
+        }
+
+        for (BookResponseDTO dto : apiResults) {
 
             Book book;
 
@@ -211,7 +210,13 @@ public class BookAggregationServiceImpl implements BookAggregationService {
             }
 
             logSearch(book, author, SearchType.AUTHOR, userEmail);
-            finalResults.add(convertToDTO(book));
+
+            boolean alreadyAdded = finalResults.stream()
+                    .anyMatch(b -> b.getIsbn().equals(book.getIsbn()));
+
+            if (!alreadyAdded) {
+                finalResults.add(convertToDTO(book));
+            }
         }
 
         return finalResults;
