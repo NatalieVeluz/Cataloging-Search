@@ -36,3 +36,14 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Angular / Frontend ###
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/.vite/
+*.tsbuildinfo
+
+### General ###
+node_modules/
+dist/
