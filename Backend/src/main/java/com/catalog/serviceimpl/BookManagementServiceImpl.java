@@ -23,6 +23,25 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * BookManagementServiceImpl
+ *
+ * Concrete implementation of BookManagementService.
+ *
+ * This service manages internal catalog operations including:
+ * - Manual book creation
+ * - Book metadata updates
+ * - Pin and unpin functionality
+ * - Retrieval of pinned books
+ * - Search log viewing and filtering
+ * - Administrative deletion of search logs
+ *
+ * Role-Based Access Control (RBAC) is enforced for
+ * administrative operations.
+ *
+ * The class is annotated with @Transactional to ensure
+ * atomic database operations and data consistency.
+ */
 @Service
 @Transactional
 public class BookManagementServiceImpl implements BookManagementService {
@@ -35,6 +54,17 @@ public class BookManagementServiceImpl implements BookManagementService {
     private final GoogleBooksService googleBooksService;
     private final OpenLibraryService openLibraryService;
 
+    /**
+     * Constructor-based dependency injection.
+     *
+     * @param bookRepository Repository for Book entity
+     * @param pinnedBookRepository Repository for PinnedBook entity
+     * @param searchLogRepository Repository for SearchLog entity
+     * @param userRepository Repository for User entity
+     * @param locService Library of Congress service
+     * @param googleBooksService Google Books service
+     * @param openLibraryService Open Library service
+     */
     public BookManagementServiceImpl(
             BookRepository bookRepository,
             PinnedBookRepository pinnedBookRepository,
@@ -54,8 +84,20 @@ public class BookManagementServiceImpl implements BookManagementService {
     }
 
     // =====================================================
-    // 🔐 ADMIN CHECK
+    // ADMIN VALIDATION
     // =====================================================
+
+    /**
+     * Validates that the requesting user has ADMIN role.
+     *
+     * Validation Steps:
+     * 1. Ensure email is not null or blank.
+     * 2. Ensure user exists in the system.
+     * 3. Ensure user role is ADMIN.
+     *
+     * @param userEmail Email of requesting user
+     * @throws ResponseStatusException if validation fails
+     */
     private void checkAdmin(String userEmail) {
 
         if (userEmail == null || userEmail.isBlank()) {
@@ -71,8 +113,23 @@ public class BookManagementServiceImpl implements BookManagementService {
     }
 
     // =====================================================
-    // 🛠 MANUAL ENTRY
+    // MANUAL BOOK CREATION
     // =====================================================
+
+    /**
+     * Creates a new manual book entry in the catalog.
+     *
+     * Workflow:
+     * - Validate ADMIN role
+     * - Validate ISBN presence
+     * - Ensure book does not already exist
+     * - Enrich metadata using external services
+     * - Save to database
+     *
+     * @param dto BookResponseDTO containing manual input
+     * @param userEmail Email of requesting ADMIN
+     * @return Saved book as BookResponseDTO
+     */
     @Override
     public BookResponseDTO createManualBook(BookResponseDTO dto, String userEmail) {
 
@@ -86,6 +143,7 @@ public class BookManagementServiceImpl implements BookManagementService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Book already exists in catalog");
         }
 
+        // Enrich metadata from APIs
         locService.enrich(dto);
         googleBooksService.enrich(dto);
         openLibraryService.enrich(dto);
@@ -110,15 +168,25 @@ public class BookManagementServiceImpl implements BookManagementService {
     }
 
     // =====================================================
-    // ✏ UPDATE BOOK
+    // UPDATE BOOK
     // =====================================================
+
+    /**
+     * Updates an existing book’s metadata.
+     *
+     * @param isbn ISBN of book to update
+     * @param dto Updated book information
+     * @param userEmail Email of requesting ADMIN
+     * @return Updated book as DTO
+     */
     @Override
     public BookResponseDTO updateBook(String isbn, BookResponseDTO dto, String userEmail) {
 
         checkAdmin(userEmail);
 
         Book book = bookRepository.findByIsbn(isbn)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Book not found"));
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Book not found"));
 
         book.setTitle(dto.getTitle());
         book.setAuthors(dto.getAuthors());
@@ -137,8 +205,16 @@ public class BookManagementServiceImpl implements BookManagementService {
     }
 
     // =====================================================
-    // 📌 PIN BOOK
+    // PIN BOOK
     // =====================================================
+
+    /**
+     * Pins a book for a specific user.
+     *
+     * @param isbn ISBN of book to pin
+     * @param userEmail Email of requesting user
+     * @return BookResponseDTO of pinned book
+     */
     @Override
     public BookResponseDTO pinBook(String isbn, String userEmail) {
 
@@ -161,8 +237,14 @@ public class BookManagementServiceImpl implements BookManagementService {
     }
 
     // =====================================================
-    // ❌ UNPIN BOOK
+    // UNPIN BOOK
     // =====================================================
+    /**
+     * Removes a pinned book for a user.
+     *
+     * @param isbn Book ISBN
+     * @param userEmail Email of requesting user
+     */
     @Override
     public void unpinBook(String isbn, String userEmail) {
 
@@ -177,8 +259,15 @@ public class BookManagementServiceImpl implements BookManagementService {
     }
 
     // =====================================================
-    // 📚 VIEW PINNED BOOKS
+    // VIEW PINNED BOOKS
     // =====================================================
+
+    /**
+     * Retrieves all books pinned by a specific user.
+     *
+     * @param userEmail Email of requesting user
+     * @return List of pinned books
+     */
     @Override
     public List<BookResponseDTO> getAllPinnedBooks(String userEmail) {
 
@@ -193,9 +282,18 @@ public class BookManagementServiceImpl implements BookManagementService {
                 .collect(Collectors.toList());
     }
 
+
     // =====================================================
-    // 🔎 SEARCH LOGS (FULL METADATA VERSION)
+    // SEARCH LOG RETRIEVAL
     // =====================================================
+
+    /**
+     * Retrieves search logs with optional filtering.
+     *
+     * @param keyword Search keyword
+     * @param searchBy Field to filter (title, author, isbn)
+     * @return List of SearchLogDTO
+     */
     @Override
     public List<SearchLogDTO> getAllBooks(String keyword, String searchBy) {
 
@@ -235,7 +333,6 @@ public class BookManagementServiceImpl implements BookManagementService {
                     dto.setAuthors(book.getAuthors());
                     dto.setCoverImageUrl(book.getCoverImageUrl());
                     dto.setPublicationYear(book.getPublicationYear());
-
                     dto.setLccn(book.getLccn());
                     dto.setCutterNumber(book.getCutterNumber());
                     dto.setEdition(book.getEdition());
@@ -243,7 +340,6 @@ public class BookManagementServiceImpl implements BookManagementService {
                     dto.setSummary(book.getSummary());
                     dto.setContentNotes(book.getContentNotes());
                     dto.setMetadataSource(book.getMetadataSource());
-
                     dto.setSearchedAt(log.getSearchedAt());
 
                     return dto;
@@ -252,10 +348,32 @@ public class BookManagementServiceImpl implements BookManagementService {
     }
 
     // =====================================================
-    // 🗑 DELETE SEARCH LOG
+    // DELETE SEARCH LOG (ADMIN ONLY)
     // =====================================================
+
+    /**
+     * Deletes a specific search log entry.
+     *
+     * Access Control:
+     * - Only users with ADMIN role are allowed to perform this operation.
+     *
+     * Validation Process:
+     * 1. Verify that the requesting user is an ADMIN.
+     * 2. Check if the search log exists using its ID.
+     * 3. Delete the search log if found.
+     *
+     * @param id ID of the search log to delete
+     * @param userEmail Email of the requesting user
+     *
+     * @throws ResponseStatusException
+     * - 400 BAD_REQUEST if userEmail is invalid
+     * - 403 FORBIDDEN if user is not ADMIN
+     * - 404 NOT_FOUND if search log does not exist
+     */
     @Override
-    public void deleteSearchLog(Long id) {
+    public void deleteSearchLog(Long id, String userEmail) {
+
+        checkAdmin(userEmail);
 
         SearchLog log = searchLogRepository.findById(id)
                 .orElseThrow(() ->
@@ -268,17 +386,55 @@ public class BookManagementServiceImpl implements BookManagementService {
     }
 
     // =====================================================
-    // 🗑 DELETE ALL SEARCH LOGS (EXCEPT PINNED)
+    // DELETE ALL SEARCH LOGS (ADMIN ONLY)
     // =====================================================
+
+    /**
+     * Deletes all search log records in the system,
+     * except those associated with pinned books.
+     *
+     * Access Control:
+     * - Only users with ADMIN role are allowed.
+     *
+     * Behavior:
+     * - Validates ADMIN role.
+     * - Calls a custom repository method that preserves
+     *   logs related to pinned books.
+     *
+     * This ensures that important or bookmarked records
+     * remain protected from bulk deletion.
+     *
+     * @param userEmail Email of the requesting user
+     *
+     * @throws ResponseStatusException
+     * - 400 BAD_REQUEST if userEmail is invalid
+     * - 403 FORBIDDEN if user is not ADMIN
+     */
     @Override
-    public void deleteAllSearchLogs() {
+    public void deleteAllSearchLogs(String userEmail) {
+
+        checkAdmin(userEmail);
 
         searchLogRepository.deleteAllExceptPinned();
     }
 
     // =====================================================
-    // 📖 GET BOOK BY ISBN
+    // GET BOOK BY ISBN
     // =====================================================
+
+    /**
+     * Retrieves a single book from the catalog using its ISBN.
+     *
+     * Behavior:
+     * - Searches the BookRepository for a matching ISBN.
+     * - Converts the Book entity into a BookResponseDTO.
+     *
+     * @param isbn ISBN of the book to retrieve
+     * @return BookResponseDTO containing full book metadata
+     *
+     * @throws ResponseStatusException
+     * - 404 NOT_FOUND if book does not exist in the catalog
+     */
     @Override
     public BookResponseDTO getBookByIsbn(String isbn) {
 
@@ -290,8 +446,15 @@ public class BookManagementServiceImpl implements BookManagementService {
     }
 
     // =====================================================
-    // 🔁 BOOK → DTO
+    // ENTITY TO DTO MAPPING
     // =====================================================
+
+    /**
+     * Converts Book entity into BookResponseDTO.
+     *
+     * @param book Book entity
+     * @return BookResponseDTO representation
+     */
     private BookResponseDTO mapToDTO(Book book) {
 
         BookResponseDTO dto = new BookResponseDTO();

@@ -2,17 +2,38 @@ package com.catalog.dto;
 
 import java.time.LocalDateTime;
 
+/**
+ * SearchLogDTO
+ *
+ * This Data Transfer Object (DTO) represents
+ * a record of a book search performed by a user.
+ *
+ * It contains both basic book information and
+ * complete metadata fields retrieved during
+ * the search process.
+ *
+ * This DTO is used to transfer search log data
+ * from the backend to the frontend.
+ */
 public class SearchLogDTO {
 
+    /**
+     * Unique identifier of the search log record.
+     */
     private Long id;
 
+    /**
+     * Core bibliographic information.
+     */
     private String isbn;
     private String title;
     private String authors;
     private String coverImageUrl;
     private String publicationYear;
 
-    // 🔥 FULL METADATA FIELDS
+    /**
+     * Extended metadata fields.
+     */
     private String lccn;
     private String cutterNumber;
     private String edition;
@@ -21,9 +42,12 @@ public class SearchLogDTO {
     private String contentNotes;
     private String metadataSource;
 
+    /**
+     * Timestamp indicating when the search was performed.
+     */
     private LocalDateTime searchedAt;
 
-    // ================= GETTERS & SETTERS =================
+    // ================= GETTERS AND SETTERS =================
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

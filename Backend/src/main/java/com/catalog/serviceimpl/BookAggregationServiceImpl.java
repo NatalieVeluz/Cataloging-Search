@@ -13,6 +13,23 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * BookAggregationServiceImpl
+ *
+ * This service handles book searching and aggregation logic.
+ *
+ * Responsibilities:
+ * - Perform DB-first search strategy
+ * - Fetch data from multiple external APIs (LOC, Google Books, Open Library)
+ * - Merge and deduplicate results
+ * - Apply metadata enrichment
+ * - Generate Cutter numbers
+ * - Save new books to database
+ * - Log user searches
+ *
+ * This class is transactional to ensure data consistency
+ * when saving books and logging searches.
+ */
 @Service
 @Transactional
 public class BookAggregationServiceImpl implements BookAggregationService {
@@ -24,6 +41,9 @@ public class BookAggregationServiceImpl implements BookAggregationService {
     private final SearchLogRepository logRepository;
     private final BookRepository bookRepository;
 
+    /**
+     * Constructor-based dependency injection.
+     */
     public BookAggregationServiceImpl(
             LocService locService,
             GoogleBooksService googleBooksService,
@@ -41,8 +61,25 @@ public class BookAggregationServiceImpl implements BookAggregationService {
     }
 
     // =====================================================
-    // ISBN SEARCH (DB-FIRST)
+    // ISBN SEARCH
     // =====================================================
+
+    /**
+     * Searches a book by ISBN using a Database-First strategy.
+     *
+     * Process:
+     * 1. Check if book already exists in database.
+     * 2. If not found, fetch metadata from external APIs.
+     * 3. Enrich metadata.
+     * 4. Apply default values if needed.
+     * 5. Generate Cutter number.
+     * 6. Save to database.
+     * 7. Log search activity.
+     *
+     * @param isbn ISBN value to search
+     * @param userEmail Email of the user performing search
+     * @return BookResponseDTO containing complete metadata
+     */
     @Override
     public BookResponseDTO searchByIsbn(String isbn, String userEmail) {
 
@@ -82,33 +119,48 @@ public class BookAggregationServiceImpl implements BookAggregationService {
     }
 
     // =====================================================
-    // TITLE SEARCH (DB-FIRST)
+    // TITLE SEARCH
     // =====================================================
+
+    /**
+     * Searches books by title.
+     *
+     * Strategy:
+     * - Retrieve manual database entries first (priority).
+     * - Fetch results from external APIs.
+     * - Deduplicate by ISBN.
+     * - Persist new API results.
+     * - Log all search activity.
+     *
+     * @param title Title keyword
+     * @param userEmail Email of requesting user
+     * @return List of BookResponseDTO
+     */
     @Override
     public List<BookResponseDTO> searchByTitle(String title, String userEmail) {
 
         List<BookResponseDTO> combinedResults = new ArrayList<>();
 
-        // 1️⃣ Always fetch from APIs
+        // Fetch from external APIs
         combinedResults.addAll(locService.searchByTitle(title));
         combinedResults.addAll(googleBooksService.searchByTitle(title));
         combinedResults.addAll(openLibraryService.searchByTitle(title));
 
         List<BookResponseDTO> apiResults = deduplicate(combinedResults);
 
-        // 2️⃣ Also fetch manual entries from DB
+        // Fetch manual entries from database
         List<Book> dbResults =
                 bookRepository.findByTitleContainingIgnoreCaseOrderByIdDesc(title);
 
         List<BookResponseDTO> finalResults = new ArrayList<>();
 
-        // Add DB results first (manual catalog priority)
+        // Add DB results first
         for (Book dbBook : dbResults) {
             logSearch(dbBook, title, SearchType.TITLE, userEmail);
             finalResults.add(convertToDTO(dbBook));
         }
 
-        // 3️⃣ Process API results
+        // Process API results
         for (BookResponseDTO dto : apiResults) {
 
             Book book;
@@ -141,7 +193,6 @@ public class BookAggregationServiceImpl implements BookAggregationService {
 
             logSearch(book, title, SearchType.TITLE, userEmail);
 
-            // Avoid duplicate in final list
             boolean alreadyAdded = finalResults.stream()
                     .anyMatch(b -> b.getIsbn().equals(book.getIsbn()));
 
@@ -154,21 +205,27 @@ public class BookAggregationServiceImpl implements BookAggregationService {
     }
 
     // =====================================================
-    // AUTHOR SEARCH (DB-FIRST)
+    // AUTHOR SEARCH
     // =====================================================
+
+    /**
+     * Searches books by author.
+     *
+     * @param author Author keyword
+     * @param userEmail Email of requesting user
+     * @return List of BookResponseDTO
+     */
     @Override
     public List<BookResponseDTO> searchByAuthor(String author, String userEmail) {
 
         List<BookResponseDTO> combinedResults = new ArrayList<>();
 
-        // 1️⃣ Always fetch from APIs
         combinedResults.addAll(locService.searchByAuthor(author));
         combinedResults.addAll(googleBooksService.searchByAuthor(author));
         combinedResults.addAll(openLibraryService.searchByAuthor(author));
 
         List<BookResponseDTO> apiResults = deduplicate(combinedResults);
 
-        // 2️⃣ Also fetch manual DB entries
         List<Book> dbResults =
                 bookRepository.findByAuthorsContainingIgnoreCaseOrderByIdDesc(author);
 
@@ -225,6 +282,19 @@ public class BookAggregationServiceImpl implements BookAggregationService {
     // =====================================================
     // SMART ENRICHMENT
     // =====================================================
+
+    /**
+     * Performs prioritized metadata enrichment.
+     *
+     * Priority Order:
+     * 1. Library of Congress
+     * 2. Google Books
+     * 3. Open Library
+     *
+     * Missing fields are merged only if null.
+     *
+     * @param book BookResponseDTO to enrich
+     */
     private void smartEnrich(BookResponseDTO book) {
 
         locService.enrich(book);
@@ -241,6 +311,9 @@ public class BookAggregationServiceImpl implements BookAggregationService {
         mergeIfNull(book, openTemp);
     }
 
+    /**
+     * Merges metadata only if the main record has null values.
+     */
     private void mergeIfNull(BookResponseDTO main, BookResponseDTO fallback) {
 
         if (main.getTitle() == null) main.setTitle(fallback.getTitle());
@@ -253,6 +326,9 @@ public class BookAggregationServiceImpl implements BookAggregationService {
         if (main.getCoverImageUrl() == null) main.setCoverImageUrl(fallback.getCoverImageUrl());
     }
 
+    /**
+     * Applies default values when metadata is missing.
+     */
     private void applyDefaults(BookResponseDTO book) {
 
         if (book.getTitle() == null)
@@ -265,6 +341,12 @@ public class BookAggregationServiceImpl implements BookAggregationService {
             book.setLccn("Not Assigned by LOC");
     }
 
+    /**
+     * Deduplicates results using ISBN as unique key.
+     *
+     * @param list List of books
+     * @return Deduplicated list
+     */
     private List<BookResponseDTO> deduplicate(List<BookResponseDTO> list) {
 
         Map<String, BookResponseDTO> uniqueMap = list.stream()
@@ -279,8 +361,16 @@ public class BookAggregationServiceImpl implements BookAggregationService {
     }
 
     // =====================================================
-    // SAVE BOOK
+    // DATABASE PERSISTENCE
     // =====================================================
+
+    /**
+     * Saves book to database.
+     * Returns existing book if already present.
+     *
+     * @param dto BookResponseDTO
+     * @return Persisted Book entity
+     */
     private Book saveToDatabase(BookResponseDTO dto) {
 
         if (dto.getIsbn() == null)
@@ -306,6 +396,9 @@ public class BookAggregationServiceImpl implements BookAggregationService {
         return bookRepository.save(book);
     }
 
+    /**
+     * Converts Book entity to BookResponseDTO.
+     */
     private BookResponseDTO convertToDTO(Book book) {
 
         BookResponseDTO dto = new BookResponseDTO();
@@ -325,6 +418,14 @@ public class BookAggregationServiceImpl implements BookAggregationService {
         return dto;
     }
 
+    /**
+     * Logs search activity into SearchLog table.
+     *
+     * @param book Book entity
+     * @param query Search query value
+     * @param type Type of search performed
+     * @param userEmail Email of user performing search
+     */
     private void logSearch(Book book, String query, SearchType type, String userEmail) {
 
         if (book == null)

@@ -14,24 +14,66 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * LocServiceImpl
+ *
+ * Concrete implementation of LocService.
+ *
+ * This service integrates with the Library of Congress (LOC) API
+ * to retrieve authoritative bibliographic metadata.
+ *
+ * Responsibilities:
+ * - Enrich book metadata using ISBN
+ * - Search books by title
+ * - Search books by author
+ * - Retrieve and parse MARCXML records
+ *
+ * Data Source:
+ * - LOC JSON search endpoint
+ * - LOC MARCXML detailed record endpoint
+ *
+ * Parsing Strategy:
+ * - Fetch JSON search result
+ * - Extract item ID
+ * - Retrieve MARCXML record
+ * - Parse relevant MARC fields
+ */
 @Service
 public class LocServiceImpl implements LocService {
 
     private final RestTemplate restTemplate;
 
+    /**
+     * Constructor-based dependency injection.
+     *
+     * @param restTemplate Used for performing HTTP requests
+     */
     public LocServiceImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
     // ======================================================
-    // ISBN ENRICHMENT (PRIMARY)
+    // ISBN ENRICHMENT
     // ======================================================
+
+    /**
+     * Enriches an existing BookResponseDTO using ISBN.
+     *
+     * Process:
+     * 1. Search LOC using ISBN (JSON endpoint).
+     * 2. Retrieve item ID.
+     * 3. Fetch MARCXML record.
+     * 4. Parse relevant MARC fields.
+     *
+     * @param book BookResponseDTO to enrich
+     */
     @Override
     public void enrich(BookResponseDTO book) {
 
         if (book == null || book.getIsbn() == null) return;
 
         try {
+
             String encodedIsbn =
                     URLEncoder.encode(book.getIsbn(), StandardCharsets.UTF_8);
 
@@ -60,6 +102,16 @@ public class LocServiceImpl implements LocService {
     // ======================================================
     // TITLE SEARCH
     // ======================================================
+
+    /**
+     * Searches books in LOC by title.
+     *
+     * Limits results to a maximum of 10 records.
+     * Only records with valid ISBN are included.
+     *
+     * @param title Title keyword
+     * @return List of BookResponseDTO
+     */
     @Override
     public List<BookResponseDTO> searchByTitle(String title) {
 
@@ -67,6 +119,7 @@ public class LocServiceImpl implements LocService {
         if (title == null || title.isBlank()) return books;
 
         try {
+
             String encodedTitle =
                     URLEncoder.encode(title, StandardCharsets.UTF_8);
 
@@ -86,7 +139,6 @@ public class LocServiceImpl implements LocService {
                 BookResponseDTO book = new BookResponseDTO();
                 parseMarc(itemId + "marcxml", book);
 
-                // Only include valid ISBN results
                 if (book.getIsbn() != null) {
                     books.add(book);
                 }
@@ -104,6 +156,15 @@ public class LocServiceImpl implements LocService {
     // ======================================================
     // AUTHOR SEARCH
     // ======================================================
+
+    /**
+     * Searches books in LOC by author name.
+     *
+     * Limits results to 10 valid ISBN records.
+     *
+     * @param author Author keyword
+     * @return List of BookResponseDTO
+     */
     @Override
     public List<BookResponseDTO> searchByAuthor(String author) {
 
@@ -111,6 +172,7 @@ public class LocServiceImpl implements LocService {
         if (author == null || author.isBlank()) return books;
 
         try {
+
             String encodedAuthor =
                     URLEncoder.encode(author, StandardCharsets.UTF_8);
 
@@ -145,11 +207,29 @@ public class LocServiceImpl implements LocService {
     }
 
     // ======================================================
-    // MARC PARSER (CLEAN & SAFE)
+    // MARCXML PARSING
     // ======================================================
+
+    /**
+     * Parses MARCXML record retrieved from LOC.
+     *
+     * Extracted MARC Fields:
+     * - 010$a → LCCN
+     * - 020$a → ISBN
+     * - 245$a → Title
+     * - 100$a → Main Author
+     * - 700$a → Secondary Author (fallback)
+     * - 260$c / 264$c → Publication Year
+     * - 250$a → Edition
+     * - 260$b / 264$b → Publisher
+     *
+     * @param marcUrl MARCXML endpoint URL
+     * @param book BookResponseDTO to populate
+     */
     private void parseMarc(String marcUrl, BookResponseDTO book) {
 
         try {
+
             String marcXml = restTemplate.getForObject(marcUrl, String.class);
             if (marcXml == null) return;
 
@@ -177,7 +257,7 @@ public class LocServiceImpl implements LocService {
 
                     if (value.isBlank()) continue;
 
-                    // ================= LCCN (010$a) =================
+                    // LCCN (010$a)
                     if ("010".equals(tag) && "a".equals(code)) {
                         book.setLccn(value.trim());
                         if (!sourceSet) {
@@ -186,7 +266,7 @@ public class LocServiceImpl implements LocService {
                         }
                     }
 
-                    // ================= ISBN (020$a) =================
+                    // ISBN (020$a)
                     if ("020".equals(tag) && "a".equals(code)) {
                         String cleaned = value.replaceAll("[^0-9X]", "");
                         if (cleaned.matches("\\d{10}|\\d{13}")) {
@@ -198,7 +278,7 @@ public class LocServiceImpl implements LocService {
                         }
                     }
 
-                    // ================= TITLE (245$a) =================
+                    // Title (245$a)
                     if ("245".equals(tag) && "a".equals(code)) {
                         book.setTitle(value.replaceAll("/$", "").trim());
                         if (!sourceSet) {
@@ -207,7 +287,7 @@ public class LocServiceImpl implements LocService {
                         }
                     }
 
-                    // ================= MAIN AUTHOR (100$a) =================
+                    // Main Author (100$a)
                     if ("100".equals(tag) && "a".equals(code)) {
                         book.setAuthors(value.trim());
                         if (!sourceSet) {
@@ -216,17 +296,13 @@ public class LocServiceImpl implements LocService {
                         }
                     }
 
-                    // ================= FALLBACK AUTHOR (700$a) =================
+                    // Fallback Author (700$a)
                     if ("700".equals(tag) && "a".equals(code)
                             && book.getAuthors() == null) {
                         book.setAuthors(value.trim());
-                        if (!sourceSet) {
-                            book.setMetadataSource("Library of Congress");
-                            sourceSet = true;
-                        }
                     }
 
-                    // ================= PUBLICATION YEAR =================
+                    // Publication Year (260$c or 264$c)
                     if (("260".equals(tag) || "264".equals(tag)) && "c".equals(code)) {
 
                         String cleanedYear = value.replaceAll("[^0-9]", "");
@@ -236,12 +312,12 @@ public class LocServiceImpl implements LocService {
                         }
                     }
 
-                    // ================= EDITION (250$a) =================
+                    // Edition (250$a)
                     if ("250".equals(tag) && "a".equals(code)) {
                         book.setEdition(value.trim());
                     }
 
-                    // ================= PUBLISHER (260$b or 264$b) =================
+                    // Publisher (260$b or 264$b)
                     if (("260".equals(tag) || "264".equals(tag)) && "b".equals(code)) {
                         book.setPublisher(value.replaceAll(",$", "").trim());
                     }

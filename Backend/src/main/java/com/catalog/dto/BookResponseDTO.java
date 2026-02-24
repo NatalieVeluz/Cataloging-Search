@@ -1,23 +1,36 @@
 package com.catalog.dto;
 
+/**
+ * BookResponseDTO
+ *
+ * This Data Transfer Object (DTO) is used to transfer
+ * book-related data between the backend and frontend.
+ *
+ * It represents the complete metadata of a book,
+ * including bibliographic details and enrichment
+ * information retrieved from external APIs.
+ */
 public class BookResponseDTO {
 
+    // Core bibliographic fields
     private String isbn;
     private String title;
     private String authors;
     private String lccn;
     private String cutterNumber;
-    private String coverImageUrl;
+
+    // Publication and edition details
     private String publicationYear;
     private String edition;
     private String publisher;
+
+    // Additional metadata
+    private String coverImageUrl;
     private String summary;
     private String contentNotes;
     private String metadataSource;
 
-    // 🔥 NEW FIELDS
-
-    // ================= GETTERS & SETTERS =================
+    // ================= GETTERS AND SETTERS =================
 
     public String getIsbn() { return isbn; }
     public void setIsbn(String isbn) { this.isbn = isbn; }
@@ -40,6 +53,12 @@ public class BookResponseDTO {
     public String getPublicationYear() { return publicationYear; }
     public void setPublicationYear(String publicationYear) { this.publicationYear = publicationYear; }
 
+    public String getEdition() { return edition; }
+    public void setEdition(String edition) { this.edition = edition; }
+
+    public String getPublisher() { return publisher; }
+    public void setPublisher(String publisher) { this.publisher = publisher; }
+
     public String getSummary() { return summary; }
     public void setSummary(String summary) { this.summary = summary; }
 
@@ -49,13 +68,14 @@ public class BookResponseDTO {
     public String getMetadataSource() { return metadataSource; }
     public void setMetadataSource(String metadataSource) { this.metadataSource = metadataSource; }
 
-    // 🔥 NEW
-    public String getEdition() { return edition; }
-    public void setEdition(String edition) { this.edition = edition; }
-
-    public String getPublisher() { return publisher; }
-    public void setPublisher(String publisher) { this.publisher = publisher; }
-
+    /**
+     * Copies all field values from another BookResponseDTO object.
+     *
+     * This method is useful when updating existing book metadata
+     * or synchronizing data between objects.
+     *
+     * @param other another BookResponseDTO instance
+     */
     public void copyFrom(BookResponseDTO other) {
         if (other == null) return;
 

@@ -2,17 +2,37 @@ package com.catalog.entity;
 
 import jakarta.persistence.*;
 
+/**
+ * Book Entity
+ *
+ * This entity represents a book record stored in the system database.
+ * It contains complete bibliographic metadata including core details
+ * and enriched information retrieved from external APIs.
+ *
+ * The entity is mapped to the "books" table in the database.
+ */
 @Entity
 @Table(name = "books")
 public class Book {
 
+    /**
+     * Primary key of the book.
+     * Automatically generated using identity strategy.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * International Standard Book Number.
+     * Must be unique in the database.
+     */
     @Column(unique = true)
     private String isbn;
 
+    /**
+     * Core bibliographic fields.
+     */
     private String title;
     private String authors;
     private String lccn;
@@ -22,13 +42,27 @@ public class Book {
     private String edition;
     private String publisher;
 
+    /**
+     * Detailed book summary.
+     * Stored as TEXT to support long descriptions.
+     */
     @Column(columnDefinition = "TEXT")
     private String summary;
 
+    /**
+     * Additional content notes related to the book.
+     * Stored as TEXT to allow extended information.
+     */
     @Column(columnDefinition = "TEXT")
     private String contentNotes;
 
+    /**
+     * Indicates the source of metadata enrichment
+     * (e.g., Manual Entry, Google Books, LOC, Open Library).
+     */
     private String metadataSource;
+
+    // ================= GETTERS AND SETTERS =================
 
     public Long getId() { return id; }
 

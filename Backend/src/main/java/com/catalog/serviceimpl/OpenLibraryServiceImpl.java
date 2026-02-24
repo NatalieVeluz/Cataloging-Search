@@ -11,28 +11,75 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * OpenLibraryServiceImpl
+ *
+ * Concrete implementation of OpenLibraryService.
+ *
+ * This service integrates with the Open Library API
+ * to retrieve bibliographic metadata.
+ *
+ * Responsibilities:
+ * - Enrich book metadata using ISBN
+ * - Search books by title
+ * - Search books by author
+ * - Extract relevant bibliographic fields
+ *
+ * API Strategy:
+ * - First perform search query
+ * - Retrieve edition key
+ * - Fetch full edition JSON for detailed metadata
+ *
+ * Data Source:
+ * - https://openlibrary.org/search.json
+ * - https://openlibrary.org/books/{editionKey}.json
+ */
 @Service
 public class OpenLibraryServiceImpl implements OpenLibraryService {
 
     private final RestTemplate restTemplate;
 
+    /**
+     * Constructor-based dependency injection.
+     *
+     * @param restTemplate Used for performing HTTP requests
+     */
     public OpenLibraryServiceImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
     // ======================================================
-    // ISBN ENRICH (SEARCH → EDITION → FULL METADATA)
+    // ISBN ENRICHMENT
     // ======================================================
+
+    /**
+     * Enriches a BookResponseDTO using ISBN.
+     *
+     * Process:
+     * 1. Search Open Library using ISBN.
+     * 2. Extract first edition key.
+     * 3. Fetch full edition JSON.
+     * 4. Extract metadata fields such as:
+     *      - Publisher
+     *      - Edition
+     *      - Publication Year
+     *      - Subjects
+     *      - Summary
+     *      - Cover image
+     *
+     * @param book BookResponseDTO to enrich
+     */
     @Override
     public void enrich(BookResponseDTO book) {
 
         if (book == null || book.getIsbn() == null) return;
 
         try {
+
             String encodedIsbn =
                     URLEncoder.encode(book.getIsbn(), StandardCharsets.UTF_8);
 
-            // 1️⃣ SEARCH
+            // Step 1: Search by ISBN
             String searchUrl =
                     "https://openlibrary.org/search.json?isbn=" + encodedIsbn;
 
@@ -45,7 +92,7 @@ public class OpenLibraryServiceImpl implements OpenLibraryService {
 
             JsonNode doc = searchRoot.get("docs").get(0);
 
-            // BASIC FIELDS
+            // Basic metadata from search result
             if (doc.hasNonNull("title"))
                 book.setTitle(doc.get("title").asText());
 
@@ -54,7 +101,7 @@ public class OpenLibraryServiceImpl implements OpenLibraryService {
                     && doc.get("author_name").size() > 0)
                 book.setAuthors(doc.get("author_name").get(0).asText());
 
-            // 2️⃣ EDITION KEY
+            // Step 2: Retrieve edition key
             if (!doc.has("edition_key")
                     || !doc.get("edition_key").isArray()
                     || doc.get("edition_key").isEmpty()) return;
@@ -62,7 +109,7 @@ public class OpenLibraryServiceImpl implements OpenLibraryService {
             String editionKey =
                     doc.get("edition_key").get(0).asText();
 
-            // 3️⃣ EDITION JSON
+            // Step 3: Retrieve edition metadata
             String editionUrl =
                     "https://openlibrary.org/books/" + editionKey + ".json";
 
@@ -71,7 +118,7 @@ public class OpenLibraryServiceImpl implements OpenLibraryService {
 
             if (editionRoot == null) return;
 
-            // ================= PUBLISHER =================
+            // Publisher
             if (editionRoot.has("publishers")
                     && editionRoot.get("publishers").isArray()
                     && editionRoot.get("publishers").size() > 0) {
@@ -81,13 +128,13 @@ public class OpenLibraryServiceImpl implements OpenLibraryService {
                 );
             }
 
-            // ================= EDITION =================
+            // Edition name
             if (editionRoot.hasNonNull("edition_name"))
                 book.setEdition(
                         editionRoot.get("edition_name").asText()
                 );
 
-            // ================= PUBLICATION YEAR =================
+            // Publication year
             if (editionRoot.hasNonNull("publish_date")) {
 
                 String publishDate =
@@ -102,7 +149,7 @@ public class OpenLibraryServiceImpl implements OpenLibraryService {
                     );
             }
 
-            // ================= PAGE COUNT =================
+            // Page count
             if (editionRoot.hasNonNull("number_of_pages")) {
                 book.setContentNotes(
                         "Pages: " +
@@ -110,14 +157,14 @@ public class OpenLibraryServiceImpl implements OpenLibraryService {
                 );
             }
 
-            // ================= SUMMARY =================
+            // Summary
             if (editionRoot.has("notes")) {
                 book.setSummary(
                         editionRoot.get("notes").asText()
                 );
             }
 
-            // ================= SUBJECTS =================
+            // Subjects (limited to first 5)
             if (editionRoot.has("subjects")
                     && editionRoot.get("subjects").isArray()) {
 
@@ -139,7 +186,7 @@ public class OpenLibraryServiceImpl implements OpenLibraryService {
                     );
             }
 
-            // ================= COVER =================
+            // Cover image
             if (editionRoot.has("covers")
                     && editionRoot.get("covers").isArray()
                     && editionRoot.get("covers").size() > 0) {
@@ -163,12 +210,23 @@ public class OpenLibraryServiceImpl implements OpenLibraryService {
     // ======================================================
     // TITLE SEARCH
     // ======================================================
+
+    /**
+     * Searches Open Library by title.
+     *
+     * Only books with valid ISBN (10 or 13 digits) are returned.
+     * Maximum of 10 results.
+     *
+     * @param title Title keyword
+     * @return List of BookResponseDTO
+     */
     @Override
     public List<BookResponseDTO> searchByTitle(String title) {
 
         List<BookResponseDTO> books = new ArrayList<>();
 
         try {
+
             String encodedTitle =
                     URLEncoder.encode(title, StandardCharsets.UTF_8);
 
@@ -215,7 +273,9 @@ public class OpenLibraryServiceImpl implements OpenLibraryService {
                 if (books.size() == 10) break;
             }
 
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            System.out.println("OpenLibrary Title Search Error: " + e.getMessage());
+        }
 
         return books;
     }
@@ -223,12 +283,23 @@ public class OpenLibraryServiceImpl implements OpenLibraryService {
     // ======================================================
     // AUTHOR SEARCH
     // ======================================================
+
+    /**
+     * Searches Open Library by author.
+     *
+     * Only books with valid ISBN are returned.
+     * Maximum of 10 results.
+     *
+     * @param author Author keyword
+     * @return List of BookResponseDTO
+     */
     @Override
     public List<BookResponseDTO> searchByAuthor(String author) {
 
         List<BookResponseDTO> books = new ArrayList<>();
 
         try {
+
             String encodedAuthor =
                     URLEncoder.encode(author, StandardCharsets.UTF_8);
 
@@ -275,7 +346,9 @@ public class OpenLibraryServiceImpl implements OpenLibraryService {
                 if (books.size() == 10) break;
             }
 
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            System.out.println("OpenLibrary Author Search Error: " + e.getMessage());
+        }
 
         return books;
     }

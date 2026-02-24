@@ -12,21 +12,64 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * GoogleBooksServiceImpl
+ *
+ * Implementation of GoogleBooksService responsible for integrating
+ * with the Google Books REST API.
+ *
+ * This service performs:
+ * - ISBN-based metadata enrichment
+ * - Title-based search
+ * - Author-based search
+ *
+ * External communication is handled using Spring's RestTemplate.
+ * JSON responses are parsed using Jackson's JsonNode.
+ *
+ * The Google Books API key is injected from application properties.
+ *
+ * Note:
+ * This implementation is synchronous (blocking).
+ * For production-level scalability, WebClient may be considered.
+ */
 @Service
 public class GoogleBooksServiceImpl implements GoogleBooksService {
 
     private final RestTemplate restTemplate;
 
+    /**
+     * API key loaded from application.properties or application.yml.
+     */
     @Value("${google.books.api.key}")
     private String apiKey;
 
+    /**
+     * Constructor-based dependency injection.
+     *
+     * @param restTemplate RestTemplate bean used for HTTP calls
+     */
     public GoogleBooksServiceImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
     // =====================================================
-    // ISBN ENRICH
+    // ISBN ENRICHMENT
     // =====================================================
+
+    /**
+     * Enriches an existing BookResponseDTO using ISBN lookup.
+     *
+     * This method:
+     * 1. Encodes the ISBN
+     * 2. Sends a request to Google Books API
+     * 3. Extracts metadata from the first result
+     * 4. Populates missing fields in the provided DTO
+     *
+     * If no result is found or an error occurs,
+     * the method safely exits without throwing an exception.
+     *
+     * @param book BookResponseDTO to be enriched
+     */
     @Override
     public void enrich(BookResponseDTO book) {
 
@@ -60,6 +103,19 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
     // =====================================================
     // TITLE SEARCH
     // =====================================================
+
+    /**
+     * Searches Google Books by title.
+     *
+     * This method:
+     * 1. Encodes the title parameter
+     * 2. Calls Google Books API with intitle query
+     * 3. Extracts up to 10 results
+     * 4. Filters out entries without valid ISBN
+     *
+     * @param title Title keyword (can be partial)
+     * @return List of BookResponseDTO with valid ISBN values
+     */
     @Override
     public List<BookResponseDTO> searchByTitle(String title) {
 
@@ -102,6 +158,19 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
     // =====================================================
     // AUTHOR SEARCH
     // =====================================================
+
+    /**
+     * Searches Google Books by author name.
+     *
+     * This method:
+     * 1. Encodes the author parameter
+     * 2. Calls Google Books API with inauthor query
+     * 3. Extracts up to 10 results
+     * 4. Filters out entries without valid ISBN
+     *
+     * @param author Author keyword (can be partial)
+     * @return List of BookResponseDTO with valid ISBN values
+     */
     @Override
     public List<BookResponseDTO> searchByAuthor(String author) {
 
@@ -142,8 +211,25 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
     }
 
     // =====================================================
-    // FIELD EXTRACTION (Reusable)
+    // FIELD EXTRACTION
     // =====================================================
+
+    /**
+     * Extracts bibliographic metadata from Google Books API response.
+     *
+     * Extracted fields include:
+     * - Title
+     * - Author (first author only)
+     * - Publisher
+     * - Publication year
+     * - Description (summary)
+     * - Category (used as content notes)
+     * - Cover image URL
+     * - Valid ISBN (10 or 13 digits)
+     *
+     * @param volumeInfo JSON node containing volume information
+     * @param book DTO object to populate
+     */
     private void extractFields(JsonNode volumeInfo, BookResponseDTO book) {
 
         if (volumeInfo == null) return;
@@ -183,7 +269,6 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
                             .get("thumbnail").asText()
             );
 
-        // Extract valid ISBN
         if (volumeInfo.has("industryIdentifiers")) {
             for (JsonNode id : volumeInfo.get("industryIdentifiers")) {
                 String identifier = id.get("identifier").asText();

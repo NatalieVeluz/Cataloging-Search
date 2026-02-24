@@ -1,19 +1,67 @@
+# ======================================================
+# SERVER CONFIGURATION
+# ======================================================
+
 server:
+  # Port where the Spring Boot application runs
+  # Default Spring Boot port is 8080
   port: 8080
 
+
+# ======================================================
+# SPRING FRAMEWORK CONFIGURATION
+# ======================================================
+
 spring:
+
+  # ------------------------------------------------------
+  # DATABASE CONFIGURATION (MySQL)
+  # ------------------------------------------------------
   datasource:
+    # JDBC connection URL
+    # - useSSL=false → disables SSL for local development
+    # - serverTimezone=Asia/Manila → ensures correct timestamp handling
     url: jdbc:mysql://localhost:3306/catalog_db?useSSL=false&serverTimezone=Asia/Manila
+    
+    # Database credentials (should be secured in production)
     username: root
     password: password
 
+  # ------------------------------------------------------
+  # JPA / HIBERNATE CONFIGURATION
+  # ------------------------------------------------------
   jpa:
     hibernate:
+      # ddl-auto options:
+      # none        → no schema changes
+      # update      → auto update schema
+      # create      → create schema each run
+      # create-drop → create and drop on shutdown
+      #
+      # "none" is recommended for production environments
       ddl-auto: none
+
+    # Displays generated SQL queries in console
+    # Useful for debugging during development
     show-sql: true
+
+    # Disables Open Session In View pattern
+    # Recommended for better transaction control
     open-in-view: false
+
+
+# ======================================================
+# EXTERNAL API CONFIGURATION
+# ======================================================
 
 google:
   books:
     api:
+      # Google Books API Key
+      # Used for accessing Google Books REST API
+      #
+      # SECURITY NOTE:
+      # In production, API keys should be:
+      # - Stored in environment variables
+      # - Or secured in external configuration server
       key: AIzaSyDvj4twvyXRybrI8WEvssLs3fbi8lOV114
