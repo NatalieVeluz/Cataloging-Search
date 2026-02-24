@@ -1,7 +1,13 @@
-<!-- ================= RESULT CARD ================= -->
+<!-- ===================================================== -->
+<!-- ================= BOOK RESULT CARD ================== -->
+<!-- Displays summarized book information in search list -->
+<!-- ===================================================== -->
 
 <div class="result-card">
 
+  <!-- ================= BOOK COVER ================= -->
+  <!-- Shows book cover image if available.
+       If image fails or does not exist, display placeholder icon. -->
   <div class="book-cover">
     <ng-container *ngIf="book?.coverImageUrl; else noImage">
       <img
@@ -16,14 +22,20 @@
     </ng-template>
   </div>
 
+  <!-- ================= BOOK BASIC INFO ================= -->
+  <!-- Displays title, author(s), and ISBN -->
   <div class="book-info">
     <h4>{{ book?.title }}</h4>
     <p><strong>By</strong> {{ book?.authors }}</p>
     <p><strong>ISBN:</strong> {{ book?.isbn }}</p>
   </div>
 
+  <!-- ================= ACTION BUTTONS ================= -->
+  <!-- Pin button + Open details button -->
   <div class="book-action">
 
+    <!-- PIN BUTTON -->
+    <!-- Toggles pinned state using PinService -->
     <button
       class="pin-btn"
       [class.pinned]="pinService.isPinned(book?.isbn)"
@@ -31,6 +43,8 @@
       📌
     </button>
 
+    <!-- OPEN DETAILS BUTTON -->
+    <!-- Opens modal with full book details -->
     <button
       class="action-btn"
       (click)="openDetails()">
@@ -41,23 +55,29 @@
 </div>
 
 
-<!-- ================= MODAL ================= -->
+<!-- ===================================================== -->
+<!-- ================= BOOK DETAILS MODAL ================= -->
+<!-- Appears when user clicks "Open Details" button       -->
+<!-- ===================================================== -->
 
 <div class="details-overlay"
      *ngIf="showModal"
      (click)="onOverlayClick($event)">
 
+  <!-- Prevent modal click from closing itself -->
   <div class="details-modal"
        (click)="$event.stopPropagation()">
 
-    <!-- HEADER -->
+    <!-- ================= MODAL HEADER ================= -->
     <div class="details-header">
 
+      <!-- CLOSE BUTTON -->
       <button class="close-btn"
               (click)="closeDetails()">
         ✕
       </button>
 
+      <!-- PIN BUTTON (inside modal) -->
       <button class="modal-pin-btn"
               [class.pinned]="pinService.isPinned(book?.isbn)"
               (click)="togglePin($event)">
@@ -68,7 +88,7 @@
 
     <div class="details-divider"></div>
 
-    <!-- COVER -->
+    <!-- ================= MODAL COVER IMAGE ================= -->
     <div class="modal-cover">
       <ng-container *ngIf="book?.coverImageUrl; else modalNoImage">
         <img
@@ -83,30 +103,37 @@
       </ng-template>
     </div>
 
-    <!-- ================= DETAILS ================= -->
+
+    <!-- ===================================================== -->
+    <!-- ================= BOOK DETAILS SECTION =============== -->
+    <!-- Displays complete bibliographic information          -->
+    <!-- Switches between View Mode and Edit Mode             -->
+    <!-- ===================================================== -->
 
     <div class="details-content">
 
-      <!-- ISBN -->
+      <!-- ISBN (Read-only) -->
       <div class="details-row">
         <label>ISBN:</label>
         <div class="details-box">{{ book?.isbn }}</div>
       </div>
 
-      <!-- Title -->
+      <!-- TITLE -->
       <div class="details-row">
         <label>Title:</label>
 
+        <!-- Editable input (Admin only) -->
         <input *ngIf="editMode"
                [(ngModel)]="editableBook.title" />
 
+        <!-- View mode -->
         <div *ngIf="!editMode"
              class="details-box">
           {{ book?.title }}
         </div>
       </div>
 
-      <!-- Author -->
+      <!-- AUTHOR -->
       <div class="details-row">
         <label>Author:</label>
 
@@ -132,7 +159,7 @@
         </div>
       </div>
 
-      <!-- Publication Year -->
+      <!-- PUBLICATION YEAR -->
       <div class="details-row">
         <label>Publication Year:</label>
 
@@ -145,7 +172,7 @@
         </div>
       </div>
 
-      <!-- Edition -->
+      <!-- EDITION -->
       <div class="details-row">
         <label>Edition:</label>
 
@@ -158,7 +185,7 @@
         </div>
       </div>
 
-      <!-- Publisher -->
+      <!-- PUBLISHER -->
       <div class="details-row">
         <label>Publisher:</label>
 
@@ -171,7 +198,7 @@
         </div>
       </div>
 
-      <!-- ✅ Content Notes (NOW NORMAL FIELD) -->
+      <!-- CONTENT NOTES -->
       <div class="details-row">
         <label>Content Notes:</label>
 
@@ -184,7 +211,7 @@
         </div>
       </div>
 
-      <!-- Cutter Number -->
+      <!-- CUTTER NUMBER -->
       <div class="details-row">
         <label>Cutter Number:</label>
 
@@ -197,7 +224,7 @@
         </div>
       </div>
 
-      <!-- ✅ Summary (ONLY large field) -->
+      <!-- SUMMARY (Large Field) -->
       <div class="details-row">
         <label>Summary:</label>
 
@@ -213,16 +240,28 @@
 
     </div>
 
-    <!-- ================= EDIT CONTROLS ================= -->
+
+    <!-- ===================================================== -->
+    <!-- ================= EDIT CONTROLS ===================== -->
+    <!-- Visible only when:
+         - User is ADMIN
+         - Book is pinned
+         - Not currently editing
+    -->
+    <!-- ===================================================== -->
 
     <div class="edit-actions">
 
-      <button *ngIf="!editMode && pinService.isPinned(book?.isbn)"
+      <!-- SHOW EDIT BUTTON -->
+      <button *ngIf="!editMode 
+                      && isAdmin 
+                      && pinService.isPinned(book?.isbn)"
               class="edit-btn"
               (click)="enableEdit()">
         Edit
       </button>
 
+      <!-- SAVE / CANCEL BUTTONS -->
       <div *ngIf="editMode">
 
         <button class="save-btn"

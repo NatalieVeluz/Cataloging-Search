@@ -1,3 +1,4 @@
+<!-- Main Layout Container -->
 <div class="layout-container">
 
   <div class="main-content">
@@ -7,10 +8,10 @@
       <!-- PAGE TITLE -->
       <h2 class="title">Manage Account</h2>
 
-      <!-- ACCOUNT CARD -->
+      <!-- ACCOUNT INFORMATION CARD -->
       <div class="account-card">
 
-        <!-- PROFILE SECTION -->
+        <!-- PROFILE SECTION (Static placeholder profile image) -->
         <div class="profile-section">
           <div class="profile-wrapper">
             <img
@@ -18,30 +19,36 @@
               alt="Profile"
               class="profile-image"
             />
+            <!-- Camera icon (Future feature: profile upload) -->
             <div class="camera-icon">
               📷
             </div>
           </div>
         </div>
 
-        <!-- LOADING -->
+        <!-- LOADING STATE -->
+        <!-- Displayed while fetching user data from backend -->
         <div *ngIf="loading" class="status-text">
           Loading account information...
         </div>
 
-        <!-- FORM -->
+        <!-- ACCOUNT DETAILS FORM -->
+        <!-- Only shown when data is successfully retrieved -->
         <div class="form-section" *ngIf="!loading && user">
 
+          <!-- USER NAME (Read-only) -->
           <div class="form-group">
             <label>Name</label>
             <input type="text" [value]="user.name" readonly />
           </div>
 
+          <!-- USER EMAIL (Read-only) -->
           <div class="form-group">
             <label>Email</label>
             <input type="text" [value]="user.email" readonly />
           </div>
 
+          <!-- USER ROLE (Admin / Librarian / Student Assistant) -->
           <div class="form-group">
             <label>Role</label>
             <input type="text" [value]="user.role" readonly />
@@ -49,7 +56,8 @@
 
         </div>
 
-        <!-- ERROR -->
+        <!-- ERROR / EMPTY STATE -->
+        <!-- Displayed if loading finished but no user data found -->
         <div *ngIf="!loading && !user" class="status-text">
           No account data found.
         </div>

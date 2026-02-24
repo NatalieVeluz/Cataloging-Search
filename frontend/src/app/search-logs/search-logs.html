@@ -10,7 +10,7 @@
         <h2 class="page-title">Search Logs</h2>
 
         <button
-          *ngIf="logs.length > 0"
+          *ngIf="logs.length > 0 && isAdmin"
           class="delete-all-btn"
           (click)="deleteAll()">
           Delete All Logs
@@ -67,6 +67,7 @@
             </app-book-result>
 
             <button
+              *ngIf="isAdmin"
               class="delete-btn"
               (click)="deleteLog(log)">
               🗑
