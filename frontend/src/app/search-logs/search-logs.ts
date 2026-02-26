@@ -236,10 +236,14 @@ export class SearchLogsComponent implements OnInit {
     }
 
     this.searchLogsService
-      .deleteLog(log.id)
+      .deleteLog(log.id, this.userEmail)
       .subscribe({
-        next: () => this.loadBooks(),
-        error: (err) => console.error('Delete failed:', err)
+        next: () => {
+          this.loadBooks(); // just reload silently
+        },
+        error: (err) => {
+          console.error('Delete failed:', err);
+        }
       });
   }
 
@@ -259,13 +263,16 @@ export class SearchLogsComponent implements OnInit {
     }
 
     this.searchLogsService
-      .deleteAllLogs()
+      .deleteAllLogs(this.userEmail)
       .subscribe({
-        next: () => this.loadBooks(),
-        error: (err) => console.error('Delete all failed:', err)
+        next: () => {
+          this.loadBooks(); // silent reload
+        },
+        error: (err) => {
+          console.error('Delete all failed:', err);
+        }
       });
   }
-
   // =====================================================
   // ================= PERFORMANCE OPTIMIZATION ==========
   // =====================================================

@@ -90,12 +90,16 @@ export class SearchLogsService {
    * Deletes a specific search log by ID.
    * Intended for Admin users only.
    */
-  deleteLog(id: number): Observable<any> {
+  deleteLog(id: number, userEmail: string): Observable<any> {
+
+    const params = new HttpParams()
+      .set('userEmail', userEmail);
+
     return this.http.delete(
-      `${this.baseUrl}/search-logs/${id}`
+      `${this.baseUrl}/search-logs/${id}`,
+      { params }
     );
   }
-
   // =====================================================
   // DELETE ALL SEARCH LOGS
   // =====================================================
@@ -104,9 +108,14 @@ export class SearchLogsService {
    * Deletes all search logs.
    * Admin-only operation.
    */
-  deleteAllLogs(): Observable<any> {
+  deleteAllLogs(userEmail: string): Observable<any> {
+
+    const params = new HttpParams()
+      .set('userEmail', userEmail);
+
     return this.http.delete(
-      `${this.baseUrl}/search-logs`
+      `${this.baseUrl}/search-logs`,
+      { params }
     );
   }
 }
