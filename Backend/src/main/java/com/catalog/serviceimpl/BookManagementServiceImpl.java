@@ -430,7 +430,7 @@ public class BookManagementServiceImpl implements BookManagementService {
      * - Converts the Book entity into a BookResponseDTO.
      *
      * @param isbn ISBN of the book to retrieve
-     * @return BookResponseDTO containing full book metadata
+     * @return  BookResponseDTO containing full book metadata
      *
      * @throws ResponseStatusException
      * - 404 NOT_FOUND if book does not exist in the catalog

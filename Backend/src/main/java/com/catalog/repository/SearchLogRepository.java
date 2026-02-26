@@ -76,8 +76,9 @@ public interface SearchLogRepository extends JpaRepository<SearchLog, Long> {
     @Modifying
     @Query("""
         DELETE FROM SearchLog s
-        WHERE s.book.id NOT IN (
-            SELECT p.book.id FROM PinnedBook p
+        WHERE NOT EXISTS (
+            SELECT p.id FROM PinnedBook p
+            WHERE p.book.id = s.book.id
         )
     """)
     void deleteAllExceptPinned();
