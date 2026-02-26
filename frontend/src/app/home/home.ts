@@ -1,16 +1,8 @@
 // ================= ANGULAR CORE =================
 import { Component, OnInit, OnDestroy } from '@angular/core';
-
-// Enables structural directives (*ngIf, *ngFor)
 import { CommonModule } from '@angular/common';
-
-// Required for ngModel (form inputs)
 import { FormsModule } from '@angular/forms';
-
-// Enables HTTP communication
 import { HttpClientModule } from '@angular/common/http';
-
-// RxJS subscription for observable cleanup
 import { Subscription } from 'rxjs';
 
 // ================= CUSTOM COMPONENTS & SERVICES =================
@@ -18,18 +10,6 @@ import { BookService } from '../services/book.service';
 import { PinService } from '../services/pin.service';
 import { BookResult } from '../book-result/book-result';
 
-/**
- * HomeComponent
- * -------------
- * Main dashboard of the Cataloging Search Platform.
- *
- * Responsibilities:
- * - Perform bibliographic search (Title, Author, ISBN)
- * - Display search results
- * - Synchronize pinned book state
- * - Handle manual cataloging submissions
- * - Manage observable subscriptions
- */
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -51,54 +31,21 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // ================= SEARCH STATE =================
 
-  /**
-   * Stores user search input
-   */
   searchQuery: string = '';
-
-  /**
-   * Selected search category
-   */
   searchType: string = 'Title';
-
-  /**
-   * Available search categories
-   */
   searchOptions: string[] = ['Title', 'Author', 'ISBN'];
 
-  /**
-   * Search results array
-   */
   results: any[] = [];
-
-  /**
-   * Currently selected book (for details view)
-   */
   selectedBook: any = null;
 
-  /**
-   * Controls loading spinner visibility
-   */
-  isLoading: boolean = false;
-
-  /**
-   * Tracks if user has performed at least one search
-   * Used for conditional UI messages
-   */
+  isLoading: boolean = false;   // 🔎 search spinner
+  isSaving: boolean = false;    // 📝 manual spinner
   hasSearched: boolean = false;
 
-  /**
-   * Subscription to pinned book observable
-   * Needed for manual cleanup on destroy
-   */
   private pinSubscription!: Subscription;
 
   // ================= LIFECYCLE =================
 
-  /**
-   * Subscribes to pinned book updates.
-   * Ensures UI updates automatically when pin state changes.
-   */
   ngOnInit(): void {
     this.pinSubscription = this.pinService.pinnedIsbns$
       .subscribe(() => {
@@ -106,9 +53,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       });
   }
 
-  /**
-   * Prevents memory leaks by unsubscribing from observable
-   */
   ngOnDestroy(): void {
     if (this.pinSubscription) {
       this.pinSubscription.unsubscribe();
@@ -119,10 +63,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   // ================= SEARCH FUNCTION ===================
   // =====================================================
 
-  /**
-   * Performs search based on selected type and query.
-   * Validates input before sending request to backend.
-   */
   performSearch(): void {
 
     if (!this.searchQuery.trim()) {
@@ -130,7 +70,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Reset state before new search
     this.results = [];
     this.isLoading = true;
     this.hasSearched = true;
@@ -138,8 +77,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.bookService.searchBooks(this.searchType, this.searchQuery)
       .subscribe({
         next: (data) => {
-
-          // Normalize response (single object vs array)
           this.results = Array.isArray(data)
             ? data
             : (data ? [data] : []);
@@ -158,10 +95,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   // ================= PIN MANAGEMENT ====================
   // =====================================================
 
-  /**
-   * Updates pin state of all displayed books.
-   * Ensures consistency between UI and PinService.
-   */
   updatePinnedState(): void {
     this.results.forEach(book => {
       book.isPinned = this.pinService.isPinned(book.isbn);
@@ -173,9 +106,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Toggles pinned state of a specific book.
-   */
   togglePin(book: any): void {
     this.pinService.togglePin(book.isbn);
   }
@@ -184,19 +114,12 @@ export class HomeComponent implements OnInit, OnDestroy {
   // ================= BOOK DETAILS ======================
   // =====================================================
 
-  /**
-   * Opens detailed view of selected book.
-   * Clones object to avoid accidental mutation.
-   */
   openDetails(book: any): void {
     this.selectedBook = { ...book };
     this.selectedBook.isPinned =
       this.pinService.isPinned(book.isbn);
   }
 
-  /**
-   * Closes detailed view modal.
-   */
   closeDetails(): void {
     this.selectedBook = null;
   }
@@ -205,10 +128,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   // ================= MANUAL CATALOGING =================
   // =====================================================
 
-  /**
-   * Data model for manual book entry.
-   * Used when external APIs do not return desired results.
-   */
   manualBook = {
     isbn: '',
     title: '',
@@ -220,10 +139,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     publicationYear: ''
   };
 
-  /**
-   * Submits manually entered bibliographic record.
-   * Handles duplicate ISBN conflict (HTTP 409).
-   */
   submitManualCatalog(): void {
 
     if (!this.manualBook.isbn.trim()) {
@@ -231,15 +146,17 @@ export class HomeComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // 🔄 Show spinner in Search Results section
+    this.isLoading = true;
+    this.hasSearched = true;   // ensures results section activates
+
     this.bookService.saveManualBook(this.manualBook)
       .subscribe({
         next: (savedBook) => {
 
-          // Add newly saved book to top of results
           this.results = [savedBook, ...this.results];
           this.updatePinnedState();
 
-          // Reset form after successful submission
           this.manualBook = {
             isbn: '',
             title: '',
@@ -250,23 +167,30 @@ export class HomeComponent implements OnInit, OnDestroy {
             edition: '',
             publicationYear: ''
           };
+
+          this.isLoading = false;  // 🔄 Stop spinner
         },
 
         error: (err) => {
 
-          // Handle duplicate ISBN case
           if (err.status === 409) {
 
             this.bookService.getBookByIsbn(this.manualBook.isbn)
-              .subscribe(existingBook => {
-
-                this.results = [existingBook, ...this.results];
-                this.updatePinnedState();
-
+              .subscribe({
+                next: (existingBook) => {
+                  this.results = [existingBook, ...this.results];
+                  this.updatePinnedState();
+                  this.isLoading = false;
+                },
+                error: () => {
+                  alert('Failed to retrieve existing book.');
+                  this.isLoading = false;
+                }
               });
 
           } else {
             alert('Failed to save manual entry.');
+            this.isLoading = false;
           }
         }
       });
