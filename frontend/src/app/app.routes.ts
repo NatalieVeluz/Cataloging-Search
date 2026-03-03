@@ -9,19 +9,17 @@ import { LoginComponent } from './login/login';
 
 export const routes: Routes = [
 
-  // Default route → Login
-  { path: '', component: LoginComponent },
+  // 🔐 LOGIN ROUTE
+  { path: 'login', component: LoginComponent },
 
-  // Home Dashboard
+  // Redirect root to login
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+
+  // ================= PROTECTED PAGES =================
   { path: 'home', component: HomeComponent },
-
-  // Pinned Books
   { path: 'pinned-books', component: PinnedBooksComponent },
-
-  // Search Logs
   { path: 'search-logs', component: SearchLogsComponent },
 
-  // Manage Account (Lazy Loaded)
   {
     path: 'manage-account',
     loadComponent: () =>
@@ -29,7 +27,6 @@ export const routes: Routes = [
         .then(m => m.AccountComponent)
   },
 
-  // 🔥 NEW RESET PASSWORD ROUTE (Lazy Loaded)
   {
     path: 'reset-password',
     loadComponent: () =>
@@ -45,5 +42,5 @@ export const routes: Routes = [
   },
 
   // Wildcard
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: 'login' }
 ];

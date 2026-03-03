@@ -57,28 +57,39 @@ export class LoginComponent {
   // ================= LOGIN FUNCTION =================
   login(): void {
 
-    // Clear previous error
     this.errorMessage = '';
 
     this.authService.login(this.email, this.password)
       .subscribe({
         next: (response: any) => {
 
-          // Store authenticated user data
           localStorage.setItem('userId', response.userId);
           localStorage.setItem('userName', response.name);
           localStorage.setItem('userEmail', response.email);
           localStorage.setItem('userRole', response.role);
 
-          // Redirect to Home
           this.router.navigate(['/home']);
         },
+
         error: (error) => {
 
-          this.errorMessage =
-            error.error?.message ||
-            error.error ||
-            'Login failed';
+          console.log('Full error response:', error);
+
+          if (typeof error.error === 'string') {
+            // Backend returned plain text
+            this.errorMessage = error.error;
+
+          } else if (error.error?.message) {
+            // Backend returned { message: "Wrong password" }
+            this.errorMessage = error.error.message;
+
+          } else if (error.error?.error) {
+            // Some Spring Boot configs return { error: "Bad credentials" }
+            this.errorMessage = error.error.error;
+
+          } else {
+            this.errorMessage = 'Invalid email or password';
+          }
         }
       });
   }

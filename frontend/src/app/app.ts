@@ -27,7 +27,7 @@ import { NavigationComponent } from './layout/navigation/navigation.component';
 })
 export class AppComponent {
 
-  showLayout = true;
+  showLayout = false; // Start hidden by default
 
   constructor(private router: Router) {
 
@@ -35,20 +35,16 @@ export class AppComponent {
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: any) => {
 
+        const currentUrl = event.urlAfterRedirects;
+
         const publicRoutes = [
-          '/',
+          '/login',
           '/register',
           '/reset-password'
         ];
 
-        if (publicRoutes.includes(event.url)) {
-          this.showLayout = false;
-        } else {
-          this.showLayout = true;
-        }
-
+        // Hide layout if route is public
+        this.showLayout = !publicRoutes.includes(currentUrl);
       });
-
   }
-
 }
