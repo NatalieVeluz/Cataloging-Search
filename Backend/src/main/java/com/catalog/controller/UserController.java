@@ -45,4 +45,21 @@ public class UserController {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
+
+    @PutMapping("/{id}/password")
+    public String updatePassword(
+            @PathVariable Integer id,
+            @RequestBody java.util.Map<String, String> body) {
+
+        String newPassword = body.get("password");
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setPassword(newPassword); // plain text (for now)
+
+        userRepository.save(user);
+
+        return "Password updated successfully";
+    }
 }

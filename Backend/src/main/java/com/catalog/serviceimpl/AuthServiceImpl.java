@@ -1,7 +1,6 @@
 package com.catalog.serviceimpl;
 
-import com.catalog.dto.LoginRequest;
-import com.catalog.dto.LoginResponse;
+import com.catalog.dto.*;
 import com.catalog.entity.LoginHistory;
 import com.catalog.entity.User;
 import com.catalog.repository.LoginHistoryRepository;
@@ -9,65 +8,43 @@ import com.catalog.repository.UserRepository;
 import com.catalog.service.AuthService;
 import org.springframework.stereotype.Service;
 
-/**
- * AuthServiceImpl
- *
- * Implements authentication logic for the system.
- *
- * Responsibilities:
- * - Validate Mapúa email domain
- * - Authenticate user credentials
- * - Check account status (active/inactive)
- * - Record login history
- * - Return login response with user details
- */
 @Service
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final LoginHistoryRepository loginHistoryRepository;
 
-    /**
-     * Constructor-based dependency injection.
-     *
-     * @param userRepository Repository for user data access
-     * @param loginHistoryRepository Repository for login history tracking
-     */
     public AuthServiceImpl(UserRepository userRepository,
                            LoginHistoryRepository loginHistoryRepository) {
         this.userRepository = userRepository;
         this.loginHistoryRepository = loginHistoryRepository;
     }
 
+    // ================= LOGIN =================
+
     @Override
     public LoginResponse login(LoginRequest request) {
 
-        // Step 1: Validate Mapúa email domain
         if (request.getEmail() == null ||
                 !request.getEmail().endsWith("@mymail.mapua.edu.ph")) {
             throw new RuntimeException("Only Mapúa emails are allowed");
         }
 
-        // Step 2: Retrieve user by email
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Invalid email or password"));
 
-        // Step 3: Check if account is active
         if (!Boolean.TRUE.equals(user.getIsActive())) {
             throw new RuntimeException("Account is disabled");
         }
 
-        // Step 4: Validate password (currently plain text comparison)
         if (!request.getPassword().equals(user.getPassword())) {
             throw new RuntimeException("Invalid email or password");
         }
 
-        // Step 5: Record login activity in LoginHistory
         LoginHistory history = new LoginHistory();
         history.setUser(user);
         loginHistoryRepository.save(history);
 
-        // Step 6: Return successful login response
         return new LoginResponse(
                 user.getUserId(),
                 user.getName(),
@@ -75,5 +52,80 @@ public class AuthServiceImpl implements AuthService {
                 user.getRole(),
                 "Login successful"
         );
+    }
+
+    // ================= REGISTER =================
+
+    @Override
+    public void register(RegisterRequest request) {
+
+        if (request.getEmail() == null ||
+                !request.getEmail().endsWith("@mymail.mapua.edu.ph")) {
+            throw new RuntimeException("Only Mapúa emails are allowed");
+        }
+
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already registered");
+        }
+
+        User user = new User();
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPassword(request.getPassword()); // plain text
+        user.setIsActive(true);
+
+        if (request.getRole() == null) {
+            user.setRole(com.catalog.enums.Role.STUDENT_ASSISTANT);
+        } else {
+            user.setRole(request.getRole());
+        }
+
+        userRepository.save(user);
+    }
+
+    // ================= RESET PASSWORD (SIMPLE VERSION) =================
+
+    @Override
+    public void resetPassword(ResetPasswordRequest request) {
+
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Email not found"));
+
+        user.setPassword(request.getNewPassword());
+        userRepository.save(user);
+    }
+
+    // ================= PASSWORD VALIDATION =================
+
+    private void validatePassword(String password) {
+
+        if (password == null) {
+            throw new RuntimeException("Password cannot be null");
+        }
+
+        // Minimum length 12
+        if (password.length() < 12) {
+            throw new RuntimeException("Password must be at least 12 characters long");
+        }
+
+        // Must contain uppercase
+        if (!password.matches(".*[A-Z].*")) {
+            throw new RuntimeException("Password must contain at least one uppercase letter");
+        }
+
+        // Must contain lowercase
+        if (!password.matches(".*[a-z].*")) {
+            throw new RuntimeException("Password must contain at least one lowercase letter");
+        }
+
+        // Must contain number
+        if (!password.matches(".*[0-9].*")) {
+            throw new RuntimeException("Password must contain at least one number");
+        }
+
+        // Must contain symbol
+        if (!password.matches(".*[!@#$%^&*()_+\\-={}\\[\\]|:;\"'<>,.?/].*")) {
+            throw new RuntimeException("Password must contain at least one special character");
+        }
     }
 }
