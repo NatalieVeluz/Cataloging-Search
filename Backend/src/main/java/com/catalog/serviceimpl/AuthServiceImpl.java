@@ -21,17 +21,22 @@ public class AuthServiceImpl implements AuthService {
     }
 
     // ================= LOGIN =================
-
     @Override
     public LoginResponse login(LoginRequest request) {
 
-        if (request.getEmail() == null ||
-                !request.getEmail().endsWith("@mymail.mapua.edu.ph")) {
+        if (request == null ||
+                request.getEmail() == null ||
+                request.getPassword() == null) {
+            throw new RuntimeException("Email and password are required");
+        }
+
+        if (!request.getEmail().endsWith("@mymail.mapua.edu.ph")) {
             throw new RuntimeException("Only Mapúa emails are allowed");
         }
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+                .orElseThrow(() ->
+                        new RuntimeException("Invalid email or password"));
 
         if (!Boolean.TRUE.equals(user.getIsActive())) {
             throw new RuntimeException("Account is disabled");
@@ -41,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Invalid email or password");
         }
 
+        // Save login history
         LoginHistory history = new LoginHistory();
         history.setUser(user);
         loginHistoryRepository.save(history);
@@ -55,12 +61,17 @@ public class AuthServiceImpl implements AuthService {
     }
 
     // ================= REGISTER =================
-
     @Override
     public void register(RegisterRequest request) {
 
-        if (request.getEmail() == null ||
-                !request.getEmail().endsWith("@mymail.mapua.edu.ph")) {
+        if (request == null ||
+                request.getEmail() == null ||
+                request.getPassword() == null ||
+                request.getName() == null) {
+            throw new RuntimeException("All fields are required");
+        }
+
+        if (!request.getEmail().endsWith("@mymail.mapua.edu.ph")) {
             throw new RuntimeException("Only Mapúa emails are allowed");
         }
 
@@ -68,10 +79,12 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Email already registered");
         }
 
+        validatePassword(request.getPassword());
+
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword()); // plain text
+        user.setPassword(request.getPassword()); // plain text (prototype only)
         user.setIsActive(true);
 
         if (request.getRole() == null) {
@@ -83,47 +96,45 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(user);
     }
 
-    // ================= RESET PASSWORD (SIMPLE VERSION) =================
-
+    // ================= RESET PASSWORD =================
     @Override
     public void resetPassword(ResetPasswordRequest request) {
 
+        if (request == null ||
+                request.getEmail() == null ||
+                request.getNewPassword() == null) {
+            throw new RuntimeException("Email and new password are required");
+        }
+
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Email not found"));
+                .orElseThrow(() ->
+                        new RuntimeException("Email not found"));
+
+        validatePassword(request.getNewPassword());
 
         user.setPassword(request.getNewPassword());
         userRepository.save(user);
     }
 
     // ================= PASSWORD VALIDATION =================
-
     private void validatePassword(String password) {
 
-        if (password == null) {
-            throw new RuntimeException("Password cannot be null");
-        }
-
-        // Minimum length 12
         if (password.length() < 12) {
             throw new RuntimeException("Password must be at least 12 characters long");
         }
 
-        // Must contain uppercase
         if (!password.matches(".*[A-Z].*")) {
             throw new RuntimeException("Password must contain at least one uppercase letter");
         }
 
-        // Must contain lowercase
         if (!password.matches(".*[a-z].*")) {
             throw new RuntimeException("Password must contain at least one lowercase letter");
         }
 
-        // Must contain number
         if (!password.matches(".*[0-9].*")) {
             throw new RuntimeException("Password must contain at least one number");
         }
 
-        // Must contain symbol
         if (!password.matches(".*[!@#$%^&*()_+\\-={}\\[\\]|:;\"'<>,.?/].*")) {
             throw new RuntimeException("Password must contain at least one special character");
         }
