@@ -1,92 +1,162 @@
 // ================= ANGULAR CORE =================
 import { Component, OnInit } from '@angular/core';
-
-// Enables structural directives like *ngIf
 import { CommonModule } from '@angular/common';
-
-// Used for making HTTP requests to backend
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
-/**
- * AccountComponent
- * ----------------
- * Displays the logged-in user's account information.
- *
- * Responsibilities:
- * - Retrieve stored userId from localStorage
- * - Fetch user details from backend API
- * - Display loading state
- * - Handle error cases
- *
- * Note:
- * NavigationComponent is NOT imported here because
- * it is handled globally by AppComponent.
- */
 @Component({
-  selector: 'app-account',   // Custom HTML tag <app-account>
-  standalone: true,          // Standalone Angular component
+  selector: 'app-account',
+  standalone: true,
   imports: [
-    CommonModule,            // Enables *ngIf and other directives
-    HttpClientModule         // Enables HTTP communication
+    CommonModule,
+    HttpClientModule,
+    FormsModule
   ],
   templateUrl: './account.html',
   styleUrls: ['./account.css']
 })
 export class AccountComponent implements OnInit {
 
-  /**
-   * Stores the logged-in user data
-   */
   user: any = null;
-
-  /**
-   * Controls loading state indicator
-   */
   loading: boolean = true;
 
-  /**
-   * Inject HttpClient for API communication
-   */
+  showChangePassword: boolean = false;
+
+  newPassword: string = '';
+  confirmPassword: string = '';
+
+  showPassword: boolean = false;
+  showConfirmPassword: boolean = false;
+
+  errorMessage: string = '';
+  successMessage: string = '';
+
   constructor(private http: HttpClient) {}
 
-  /**
-   * Lifecycle hook
-   *
-   * Steps:
-   * 1. Retrieve userId from localStorage
-   * 2. Fetch user details from backend
-   * 3. Handle success and error states
-   */
   ngOnInit(): void {
 
-    // Retrieve stored userId from browser storage
     const userId = localStorage.getItem('userId');
 
-    console.log('Stored userId:', userId);
-
-    // If userId does not exist, stop loading
     if (!userId) {
-      console.error('No userId found in localStorage');
       this.loading = false;
+      this.errorMessage = "User not found. Please login again.";
       return;
     }
 
-    // Send GET request to backend to fetch user details
     this.http.get(`http://localhost:8080/api/users/${userId}`)
       .subscribe({
-
-        // Successful response
         next: (data) => {
-          console.log('User data received:', data);
           this.user = data;
           this.loading = false;
         },
-
-        // Error response
-        error: (err) => {
-          console.error('Error fetching user:', err);
+        error: () => {
           this.loading = false;
+          this.errorMessage = "Failed to load account information.";
         }
       });
+  }
+
+  toggleChangePassword(): void {
+    this.showChangePassword = !this.showChangePassword;
+
+    if (!this.showChangePassword) {
+      this.resetPasswordFields();
+    }
+  }
+
+  togglePassword(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPassword(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
+
+  resetPasswordFields(): void {
+    this.newPassword = '';
+    this.confirmPassword = '';
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.showPassword = false;
+    this.showConfirmPassword = false;
+  }
+
+  // ================= PASSWORD RULES =================
+
+  hasMinLength(): boolean {
+    return this.newPassword.length >= 12;
+  }
+
+  hasUppercase(): boolean {
+    return /[A-Z]/.test(this.newPassword);
+  }
+
+  hasLowercase(): boolean {
+    return /[a-z]/.test(this.newPassword);
+  }
+
+  hasNumber(): boolean {
+    return /\d/.test(this.newPassword);
+  }
+
+  hasSymbol(): boolean {
+    return /[\W_]/.test(this.newPassword);
+  }
+
+  passwordsMatch(): boolean {
+    return this.newPassword === this.confirmPassword;
+  }
+
+  isPasswordValid(): boolean {
+    return this.hasMinLength()
+      && this.hasUppercase()
+      && this.hasLowercase()
+      && this.hasNumber()
+      && this.hasSymbol();
+  }
+
+  // ================= UPDATE PASSWORD =================
+
+  updatePassword(): void {
+
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    const userId = localStorage.getItem('userId');
+
+    if (!userId) {
+      this.errorMessage = "User ID missing. Please login again.";
+      return;
+    }
+
+    if (!this.isPasswordValid()) {
+      this.errorMessage =
+        "Password does not meet security requirements.";
+      return;
+    }
+
+    if (!this.passwordsMatch()) {
+      this.errorMessage = "Passwords do not match.";
+      return;
+    }
+
+    this.http.put(
+      `http://localhost:8080/api/users/${userId}/password`,
+      { password: this.newPassword },
+      { responseType: 'text' }   // IMPORTANT FIX
+    ).subscribe({
+      next: (response: string) => {
+
+        this.successMessage = response;
+
+        this.resetPasswordFields();
+
+        // Auto close password form after success
+        this.showChangePassword = false;
+      },
+      error: () => {
+        this.errorMessage = "Failed to update password.";
+      }
+    });
   }
 }

@@ -24,34 +24,24 @@ import { AuthService } from '../services/auth';
  * - Store authenticated user data in localStorage
  * - Redirect user to Home page upon success
  * - Display error message if authentication fails
+ * - Navigate to Reset Password page
+ * - Navigate to Register page
  */
 @Component({
-  selector: 'app-login',     // Custom tag <app-login>
-  standalone: true,          // Standalone Angular component
+  selector: 'app-login',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
 export class LoginComponent {
 
-  /**
-   * Stores user email input
-   */
+  // ================= FORM FIELDS =================
   email: string = '';
-
-  /**
-   * Stores user password input
-   */
   password: string = '';
 
-  /**
-   * Displays authentication error messages
-   */
+  // ================= UI STATES =================
   errorMessage: string = '';
-
-  /**
-   * Controls password visibility toggle
-   */
   showPassword: boolean = false;
 
   constructor(
@@ -59,57 +49,47 @@ export class LoginComponent {
     private router: Router
   ) {}
 
-  /**
-   * Toggles password visibility between hidden and visible
-   * Improves user experience during login
-   */
+  // ================= TOGGLE PASSWORD =================
   togglePassword(): void {
     this.showPassword = !this.showPassword;
   }
 
-  /**
-   * Performs login authentication.
-   *
-   * Steps:
-   * 1. Clear previous error message
-   * 2. Call AuthService login method
-   * 3. Store returned user details in localStorage
-   * 4. Redirect to Home page
-   * 5. Display error message if login fails
-   */
+  // ================= LOGIN FUNCTION =================
   login(): void {
 
-    // Clear any previous error message
+    // Clear previous error
     this.errorMessage = '';
 
     this.authService.login(this.email, this.password)
       .subscribe({
         next: (response: any) => {
 
-          /**
-           * Store authenticated user data
-           * Used for:
-           * - Role-based UI control
-           * - Account page display
-           * - Session persistence
-           */
+          // Store authenticated user data
           localStorage.setItem('userId', response.userId);
           localStorage.setItem('userName', response.name);
           localStorage.setItem('userEmail', response.email);
           localStorage.setItem('userRole', response.role);
 
-          // Navigate to Home dashboard after successful login
+          // Redirect to Home
           this.router.navigate(['/home']);
         },
         error: (error) => {
 
-          /**
-           * Display backend error message
-           * Fallback to generic message if none provided
-           */
           this.errorMessage =
-            error.error?.message || 'Login failed';
+            error.error?.message ||
+            error.error ||
+            'Login failed';
         }
       });
+  }
+
+  // ================= FORGOT PASSWORD =================
+  goToReset(): void {
+    this.router.navigate(['/reset-password']);
+  }
+
+  // ================= GO TO REGISTER =================
+  goToRegister(): void {
+    this.router.navigate(['/register']);
   }
 }

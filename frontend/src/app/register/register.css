@@ -1,27 +1,18 @@
 /* ================= PAGE BACKGROUND ================= */
 
 .page-wrapper {
-  position: relative;
   min-height: 100vh;
-
-  background-image: url('/login-bg.png'); /* from public */
-  background-size: cover;
-  background-position: center bottom;
-  background-repeat: no-repeat;
-
+  background: url('/login-bg.png') center bottom / cover no-repeat;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* ================= LOGIN CARD ================= */
+/* ================= CARD ================= */
 
 .login-card {
-  position: relative;
-  z-index: 1;
-
   background: rgba(255, 255, 255, 0.95);
-  width: 800px;
+  width: 820px;
   max-width: 95%;
   border-radius: 18px;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
@@ -33,11 +24,9 @@
 .login-header {
   background-color: #f1eae9;
   border-bottom: 4px solid #7B1E14;
-
   display: flex;
   align-items: center;
   gap: 30px;
-
   padding: 25px 40px;
 }
 
@@ -82,7 +71,7 @@
 
 .welcome-section h2 {
   margin: 0;
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 700;
   color: #7b1113;
   font-family: 'Georgia', serif;
@@ -99,38 +88,36 @@
 .form-group {
   display: flex;
   align-items: center;
-  margin: 20px 120px;
+  margin: 24px 140px;
 }
 
 .form-group label {
-  width: 120px;
+  width: 140px;
   font-weight: 500;
   color: #333;
 }
 
 .form-group input,
-.password-wrapper {
+.form-group select {
   flex: 1;
-}
-
-.form-group input {
+  height: 48px;
   padding: 10px 14px;
   border: 1px solid #ccc;
   border-radius: 8px;
   background-color: #fafafa;
-  font-size: 14px;
-  height: 42px;
+  font-size: 15px;
   box-sizing: border-box;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus {
   outline: none;
   border-color: #7b1113;
   box-shadow: 0 0 0 2px rgba(123, 17, 19, 0.1);
 }
 
-/* ================= PASSWORD ================= */
+/* ================= PASSWORD WRAPPER ================= */
 
 .password-wrapper {
   position: relative;
@@ -139,26 +126,29 @@
 
 .password-wrapper input {
   width: 100%;
-  height: 42px;
-  padding: 10px 45px 10px 14px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #fafafa;
-  font-size: 14px;
-  box-sizing: border-box;
+  padding: 10px 60px 10px 14px; /* space for icon */
 }
+
+/* ================= TOGGLE PASSWORD ================= */
 
 .toggle-password {
   position: absolute;
-  right: 12px;
+  right: 14px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
   cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 38px;
+  height: 38px;
+
   color: #7b1113;
-  padding: 0;
-  transition: transform 0.2s ease, color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .toggle-password:hover {
@@ -167,18 +157,60 @@
 }
 
 .eye-icon {
-  width: 20px;
-  height: 20px;
+  width: 26px;
+  height: 26px;
+}
+
+/* ================= REMOVE DEFAULT PASSWORD ICON ================= */
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+input[type="password"]::-webkit-textfield-decoration-container,
+input[type="password"]::-webkit-credentials-auto-fill-button {
+  display: none !important;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+input[type="password"] {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* ================= PASSWORD RULES ================= */
+
+.password-rules {
+  margin: 15px 140px 0 140px;
+  font-size: 14px;
+  color: #555;
+}
+
+.password-rules ul {
+  margin: 8px 0 0 18px;
+  padding: 0;
+}
+
+.password-rules li {
+  margin-bottom: 6px;
+  transition: color 0.3s ease;
+}
+
+.password-rules li.valid {
+  color: #1b8a3a;
+  font-weight: 600;
 }
 
 /* ================= BUTTON ================= */
 
 .login-btn {
   display: block;
-  margin: 40px auto 40px;
+  margin: 40px auto 20px;
   background-color: #7b1113;
   color: white;
-  padding: 12px 50px;
+  padding: 14px 55px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -192,6 +224,23 @@
   transform: translateY(-2px);
 }
 
+/* ================= LINKS ================= */
+
+.login-links {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.register-link {
+  cursor: pointer;
+  color: #7B1E14;
+  font-size: 14px;
+}
+
+.register-link:hover {
+  text-decoration: underline;
+}
+
 /* ================= ERROR ================= */
 
 .error {
@@ -199,24 +248,4 @@
   color: #d00000;
   margin-bottom: 20px;
   font-size: 14px;
-}
-
-/* ================= FORGOT ================= */
-
-.login-links {
-  text-align: center;
-  margin-top: 10px;
-}
-
-.forgot-link,
-.register-link {
-  cursor: pointer;
-  color: #7B1E14;
-  font-size: 14px;
-  margin: 5px 0;
-}
-
-.forgot-link:hover,
-.register-link:hover {
-  text-decoration: underline;
 }

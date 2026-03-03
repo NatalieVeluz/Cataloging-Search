@@ -1,17 +1,12 @@
-<!-- Main Layout Container -->
 <div class="layout-container">
-
   <div class="main-content">
-
     <div class="content-wrapper">
 
-      <!-- PAGE TITLE -->
       <h2 class="title">Manage Account</h2>
 
-      <!-- ACCOUNT INFORMATION CARD -->
       <div class="account-card">
 
-        <!-- PROFILE SECTION (Static placeholder profile image) -->
+        <!-- PROFILE -->
         <div class="profile-section">
           <div class="profile-wrapper">
             <img
@@ -19,53 +14,157 @@
               alt="Profile"
               class="profile-image"
             />
-            <!-- Camera icon (Future feature: profile upload) -->
-            <div class="camera-icon">
-              📷
-            </div>
           </div>
         </div>
 
-        <!-- LOADING STATE -->
-        <!-- Displayed while fetching user data from backend -->
         <div *ngIf="loading" class="status-text">
           Loading account information...
         </div>
 
-        <!-- ACCOUNT DETAILS FORM -->
-        <!-- Only shown when data is successfully retrieved -->
         <div class="form-section" *ngIf="!loading && user">
 
-          <!-- USER NAME (Read-only) -->
+          <!-- USER INFO -->
           <div class="form-group">
             <label>Name</label>
             <input type="text" [value]="user.name" readonly />
           </div>
 
-          <!-- USER EMAIL (Read-only) -->
           <div class="form-group">
             <label>Email</label>
             <input type="text" [value]="user.email" readonly />
           </div>
 
-          <!-- USER ROLE (Admin / Librarian / Student Assistant) -->
           <div class="form-group">
             <label>Role</label>
             <input type="text" [value]="user.role" readonly />
           </div>
 
-        </div>
+          <!-- CHANGE PASSWORD BUTTON -->
+          <button class="change-btn" (click)="toggleChangePassword()">
+            {{ showChangePassword ? 'Cancel' : 'Change Password' }}
+          </button>
 
-        <!-- ERROR / EMPTY STATE -->
-        <!-- Displayed if loading finished but no user data found -->
-        <div *ngIf="!loading && !user" class="status-text">
-          No account data found.
-        </div>
+          <!-- PASSWORD SECTION -->
+          <div *ngIf="showChangePassword" class="password-section">
 
+            <!-- NEW PASSWORD -->
+            <div class="form-group">
+              <label>New Password</label>
+
+              <div class="password-wrapper">
+                <input
+                  [type]="showPassword ? 'text' : 'password'"
+                  [(ngModel)]="newPassword"
+                  placeholder="Enter new password" />
+
+                <button
+                  type="button"
+                  class="toggle-password"
+                  (click)="togglePassword()">
+
+                  <svg *ngIf="!showPassword"
+                       xmlns="http://www.w3.org/2000/svg"
+                       viewBox="0 0 24 24"
+                       fill="none"
+                       stroke="currentColor"
+                       stroke-width="2"
+                       stroke-linecap="round"
+                       stroke-linejoin="round"
+                       class="eye-icon">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+
+                  <svg *ngIf="showPassword"
+                       xmlns="http://www.w3.org/2000/svg"
+                       viewBox="0 0 24 24"
+                       fill="none"
+                       stroke="currentColor"
+                       stroke-width="2"
+                       stroke-linecap="round"
+                       stroke-linejoin="round"
+                       class="eye-icon">
+                    <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C5 20 1 12 1 12"/>
+                    <path d="M1 1l22 22"/>
+                  </svg>
+
+                </button>
+              </div>
+            </div>
+
+            <!-- CONFIRM PASSWORD -->
+            <div class="form-group">
+              <label>Confirm Password</label>
+
+              <div class="password-wrapper">
+                <input
+                  [type]="showConfirmPassword ? 'text' : 'password'"
+                  [(ngModel)]="confirmPassword"
+                  placeholder="Confirm new password" />
+
+                <button
+                  type="button"
+                  class="toggle-password"
+                  (click)="toggleConfirmPassword()">
+
+                  <svg *ngIf="!showConfirmPassword"
+                       xmlns="http://www.w3.org/2000/svg"
+                       viewBox="0 0 24 24"
+                       fill="none"
+                       stroke="currentColor"
+                       stroke-width="2"
+                       stroke-linecap="round"
+                       stroke-linejoin="round"
+                       class="eye-icon">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+
+                  <svg *ngIf="showConfirmPassword"
+                       xmlns="http://www.w3.org/2000/svg"
+                       viewBox="0 0 24 24"
+                       fill="none"
+                       stroke="currentColor"
+                       stroke-width="2"
+                       stroke-linecap="round"
+                       stroke-linejoin="round"
+                       class="eye-icon">
+                    <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C5 20 1 12 1 12"/>
+                    <path d="M1 1l22 22"/>
+                  </svg>
+
+                </button>
+              </div>
+            </div>
+
+            <!-- PASSWORD RULES -->
+            <div class="password-rules">
+              <strong>Password must contain:</strong>
+              <ul>
+                <li [class.valid]="hasMinLength()">At least 12 characters</li>
+                <li [class.valid]="hasUppercase()">One uppercase letter</li>
+                <li [class.valid]="hasLowercase()">One lowercase letter</li>
+                <li [class.valid]="hasNumber()">One number</li>
+                <li [class.valid]="hasSymbol()">One symbol</li>
+              </ul>
+            </div>
+
+            <button class="update-btn" (click)="updatePassword()">
+              Update Password
+            </button>
+
+            <p class="success-text" *ngIf="successMessage">
+              {{ successMessage }}
+            </p>
+
+            <p class="error-text" *ngIf="errorMessage">
+              {{ errorMessage }}
+            </p>
+
+          </div>
+
+        </div>
       </div>
-
     </div>
-
   </div>
-
 </div>

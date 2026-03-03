@@ -7,54 +7,21 @@ import { PinnedBooksComponent } from './pinned-books/pinned-books';
 import { SearchLogsComponent } from './search-logs/search-logs';
 import { LoginComponent } from './login/login';
 
-/**
- * Application Routes
- * ------------------
- * Defines navigation paths for the application.
- *
- * Responsibilities:
- * - Map URL paths to components
- * - Enable lazy loading where appropriate
- * - Provide fallback route handling
- */
 export const routes: Routes = [
 
-  /**
-   * Default route
-   * Redirects to Login page when accessing root URL
-   */
+  // Default route → Login
   { path: '', component: LoginComponent },
 
-  /**
-   * Home Dashboard
-   * Main search and cataloging page
-   */
+  // Home Dashboard
   { path: 'home', component: HomeComponent },
 
-  /**
-   * Pinned Books Page
-   * Displays user's pinned book collection
-   */
+  // Pinned Books
   { path: 'pinned-books', component: PinnedBooksComponent },
 
-  /**
-   * Search Logs Page
-   * Displays audit history of searches
-   */
+  // Search Logs
   { path: 'search-logs', component: SearchLogsComponent },
 
-  // =====================================================
-  // Lazy-Loaded Standalone Component
-  // =====================================================
-
-  /**
-   * Manage Account Page
-   *
-   * Uses lazy loading to:
-   * - Improve initial load performance
-   * - Reduce bundle size
-   * - Load component only when needed
-   */
+  // Manage Account (Lazy Loaded)
   {
     path: 'manage-account',
     loadComponent: () =>
@@ -62,9 +29,21 @@ export const routes: Routes = [
         .then(m => m.AccountComponent)
   },
 
-  /**
-   * Wildcard Route
-   * Redirects unknown URLs back to login
-   */
+  // 🔥 NEW RESET PASSWORD ROUTE (Lazy Loaded)
+  {
+    path: 'reset-password',
+    loadComponent: () =>
+      import('./reset-password/reset-password')
+        .then(m => m.ResetPasswordComponent)
+  },
+
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./register/register')
+        .then(m => m.RegisterComponent)
+  },
+
+  // Wildcard
   { path: '**', redirectTo: '' }
 ];
