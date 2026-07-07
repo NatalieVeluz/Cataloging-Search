@@ -28,6 +28,14 @@ Users authenticate using their authorized Mapúa library account.
 
 ---
 
+## Register Account Page
+
+<img src="images/register-account-page.png" alt="Register Account Page" width="900">
+
+Administrators can register new librarian or student assistant accounts.
+
+---
+
 ## Home Search Page
 
 <img src="images/home-search-page.png" alt="Home Search Page" width="900">
@@ -60,13 +68,6 @@ Displays users' search history for monitoring and auditing purposes.
 
 ---
 
-## Register Account Page
-
-<img src="images/register-account-page.png" alt="Register Account Page" width="900">
-
-Administrators can register new librarian or student assistant accounts.
-
----
 
 ## Manage Account Page
 
