@@ -18,7 +18,7 @@ This project was developed as an undergraduate thesis and was designed in consul
 
 ---
 
-# Screenshots
+# Screenshots of Webpages
 
 ## Login Page
 
