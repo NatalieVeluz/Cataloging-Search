@@ -5,15 +5,74 @@
 
 ## Project Overview
 
-The **Cataloging Search Resources Platform** is a desktop-based web application developed for the Mapúa University Library (Makati Campus).
 
-The system centralizes bibliographic searching by allowing users to search books using:
+The **Cataloging Search Resources Platform** is a desktop-based web application developed for the **Mapúa University Library – Makati Campus** to improve the efficiency of bibliographic searching and cataloging operations.
 
-- ISBN  
-- Title  
-- Author  
-- Manual Cataloging  
+The platform enables librarians and authorized staff to search for book information using **ISBN, title, or author** by aggregating metadata from multiple trusted bibliographic sources. Rather than searching each repository individually, the system consolidates results into a single interface, reducing manual effort and improving cataloging accuracy.
 
+To support library workflows, the application provides features such as user authentication, role-based access control, pinned records, account management, search history, and audit logging. It also generates Cutter Numbers to assist in organizing library collections according to standard cataloging practices.
+
+Originally designed to integrate with Library of Congress, WorldCat, Amazon Books, and Goodreads, the system was adapted to use publicly accessible APIs due to licensing and subscription restrictions. The final implementation integrates the **Library of Congress API**, **Open Library API**, and **Google Books API**, providing comprehensive bibliographic information while remaining compliant with publicly available services.
+
+This project was developed as an undergraduate thesis and was designed in consultation with the **Head Cataloger of the Mapúa University Library – Makati Campus** to ensure that its features align with real-world cataloging workflows and library requirements.
+
+---
+
+# Screenshots
+
+## Login Page
+
+<img src="images/login-page.png" alt="Login Page" width="900">
+
+Users authenticate using their authorized Mapúa library account.
+
+---
+
+## Home Search Page
+
+<img src="images/home-search-page.png" alt="Home Search Page" width="900">
+
+The main interface where librarians can search books using ISBN, title, or author.
+
+---
+
+## Book Details & Edit Page
+
+<img src="images/details-edit-page.png" alt="Details and Edit Page" width="900">
+
+Displays complete bibliographic information and allows authorized users to edit pinned records.
+
+---
+
+## Pinned Books Page
+
+<img src="images/pinned-books-page.png" alt="Pinned Books Page" width="900">
+
+Shows bookmarked catalog records for quick access and future modifications.
+
+---
+
+## Search Logs Page
+
+<img src="images/search-logs-page.png" alt="Search Logs Page" width="900">
+
+Displays users' search history for monitoring and auditing purposes.
+
+---
+
+## Register Account Page
+
+<img src="images/register-account-page.png" alt="Register Account Page" width="900">
+
+Administrators can register new librarian or student assistant accounts.
+
+---
+
+## Manage Account Page
+
+<img src="images/manage-account-page.png" alt="Manage Account Page" width="900">
+
+Administrators can manage existing user accounts and their roles.
 ---
 
 ## Original System Requirement
